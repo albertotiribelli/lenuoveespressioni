@@ -8,7 +8,6 @@ export interface Play {
   description: string | null
   poster_url: string | null
   youtube_url: string | null
-  gphotos_url: string | null
   created_at: string | null
 }
 
@@ -40,6 +39,7 @@ export interface PerformanceDate {
   time: string | null
   theater_name: string
   city: string | null
+  gphotos_url: string | null
   notes: string | null
   created_at: string | null
 }
