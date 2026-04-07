@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 const navLinks = [
   { href: '/spettacoli', label: 'Spettacoli' },
-  { href: '/contatti', label: 'Chi Siamo' },
+  { href: '/chi-siamo', label: 'Chi Siamo' },
   { href: '/archivio', label: 'Archivio' },
   { href: '/media', label: 'Media' },
   { href: '/contatti', label: 'Contatti' },
