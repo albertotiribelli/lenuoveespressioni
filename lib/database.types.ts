@@ -19,6 +19,7 @@ export type Database = {
           city: string | null
           created_at: string | null
           date: string
+          gphotos_url: string | null
           id: string
           notes: string | null
           production_id: string | null
@@ -29,6 +30,7 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           date: string
+          gphotos_url?: string | null
           id?: string
           notes?: string | null
           production_id?: string | null
@@ -39,6 +41,7 @@ export type Database = {
           city?: string | null
           created_at?: string | null
           date?: string
+          gphotos_url?: string | null
           id?: string
           notes?: string | null
           production_id?: string | null
@@ -140,7 +143,6 @@ export type Database = {
         Row: {
           created_at: string | null
           description: string | null
-          gphotos_url: string | null
           id: string
           poster_url: string | null
           short_desc: string | null
@@ -151,7 +153,6 @@ export type Database = {
         Insert: {
           created_at?: string | null
           description?: string | null
-          gphotos_url?: string | null
           id?: string
           poster_url?: string | null
           short_desc?: string | null
@@ -162,7 +163,6 @@ export type Database = {
         Update: {
           created_at?: string | null
           description?: string | null
-          gphotos_url?: string | null
           id?: string
           poster_url?: string | null
           short_desc?: string | null

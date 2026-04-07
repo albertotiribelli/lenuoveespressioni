@@ -4,6 +4,7 @@ interface DateEntry {
   time: string | null
   theater_name: string
   city: string | null
+  gphotos_url?: string | null
 }
 
 interface Production {
@@ -14,7 +15,7 @@ interface Production {
 }
 
 interface ProductionHistoryProps {
-  productions: Production[]
+  readonly productions: Production[]
 }
 
 export default function ProductionHistory({ productions }: ProductionHistoryProps) {
@@ -42,6 +43,16 @@ export default function ProductionHistory({ productions }: ProductionHistoryProp
                     {' — '}
                     <span>{d.theater_name}</span>
                     {d.city && <span>, {d.city}</span>}
+                    {d.gphotos_url && (
+                      <a
+                        href={d.gphotos_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-[var(--accent)] hover:underline"
+                      >
+                        Foto →
+                      </a>
+                    )}
                   </li>
                 )
               })}

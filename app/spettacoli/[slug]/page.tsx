@@ -24,6 +24,7 @@ export default async function SpettacoloPage({ params }: Props) {
       time: d.time,
       theater_name: d.theater_name,
       city: d.city,
+      gphotos_url: d.gphotos_url,
       notes: d.notes,
       created_at: null,
     })) ?? []
@@ -81,6 +82,7 @@ export default async function SpettacoloPage({ params }: Props) {
                   time: d.time,
                   theater_name: d.theater_name,
                   city: d.city,
+                  gphotos_url: d.gphotos_url,
                 })),
               }))} />
             </section>
@@ -116,19 +118,6 @@ export default async function SpettacoloPage({ params }: Props) {
             </section>
           )}
 
-          {play.gphotos_url && (
-            <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Galleria</h2>
-              <a
-                href={play.gphotos_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-[var(--accent)] hover:underline"
-              >
-                Apri album fotografico →
-              </a>
-            </section>
-          )}
         </aside>
       </div>
     </article>

@@ -19,11 +19,11 @@ function buildChain(result: { data: unknown; error: unknown }) {
 const playA = {
   id: '1', slug: 'amleto', title: 'Amleto',
   short_desc: 'Il principe di Danimarca.', poster_url: null,
-  youtube_url: null, gphotos_url: null,
+  youtube_url: null,
 }
 const playB = {
   id: '2', slug: 'sei-personaggi', title: 'Sei personaggi in cerca d\'autore',
-  short_desc: null, poster_url: null, youtube_url: null, gphotos_url: null,
+  short_desc: null, poster_url: null, youtube_url: null,
 }
 
 const fullPlay = {
