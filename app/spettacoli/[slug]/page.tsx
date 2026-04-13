@@ -33,13 +33,41 @@ export default async function SpettacoloPage({ params }: Props) {
     .filter((d) => d.date >= new Date().toISOString().slice(0, 10))
     .sort((a, b) => a.date.localeCompare(b.date))
 
-  const cast = (play.productions?.[0]?.dates?.[0]?.performance_people ?? [])
-    .filter((pp) => pp.people != null)
-    .map((pp) => ({
-      character_name: pp.character_name,
-      role: pp.role,
-      people: pp.people!,
-    }))
+  // Aggregate cast across all dates of the most recent production,
+  // flagging people who appear on only one specific date.
+  const productionDates = play.productions?.[0]?.dates ?? []
+  const totalDates = productionDates.length
+
+  const castMap = new Map<string, {
+    character_name: string | null
+    role: string
+    people: NonNullable<typeof productionDates[0]['performance_people'][0]['people']>
+    datesSeen: string[]
+  }>()
+
+  for (const d of productionDates) {
+    for (const pp of d.performance_people ?? []) {
+      if (!pp.people) continue
+      const key = pp.people.id
+      if (castMap.has(key)) {
+        castMap.get(key)!.datesSeen.push(d.date)
+      } else {
+        castMap.set(key, {
+          character_name: pp.character_name,
+          role: pp.role,
+          people: pp.people,
+          datesSeen: [d.date],
+        })
+      }
+    }
+  }
+
+  const cast = Array.from(castMap.values()).map((entry) => ({
+    character_name: entry.character_name,
+    role: entry.role,
+    people: entry.people,
+    onlyDate: entry.datesSeen.length === 1 && totalDates > 1 ? entry.datesSeen[0] : null,
+  }))
 
   return (
     <article className="mx-auto max-w-5xl px-6 py-20">

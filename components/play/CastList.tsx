@@ -9,6 +9,7 @@ interface CastEntry {
     name: string
     photo_url: string | null
   }
+  onlyDate?: string | null
 }
 
 interface CastListProps {
@@ -20,17 +21,34 @@ export default function CastList({ cast }: CastListProps) {
 
   return (
     <ul className="divide-y divide-[var(--border)]">
-      {cast.map((entry) => (
-        <li key={entry.people.id} className="flex items-center justify-between py-3">
-          <span className="text-[var(--text-muted)] italic">{entry.character_name}</span>
-          <Link
-            href={`/attori/${entry.people.slug}`}
-            className="text-[var(--text)] hover:text-[var(--accent)] transition-colors"
-          >
-            {entry.people.name}
-          </Link>
-        </li>
-      ))}
+      {cast.map((entry) => {
+        const dateLabel = entry.onlyDate
+          ? new Date(entry.onlyDate).toLocaleDateString('it-IT', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })
+          : null
+
+        return (
+          <li key={entry.people.id} className="grid grid-cols-2 gap-4 py-3 items-start">
+            <span className="text-[var(--text-muted)] italic">{entry.character_name}</span>
+            <div className="text-right">
+              <Link
+                href={`/attori/${entry.people.slug}`}
+                className="text-[var(--text)] hover:text-[var(--accent)] transition-colors"
+              >
+                {entry.people.name}
+              </Link>
+              {dateLabel && (
+                <p className="mt-0.5 text-xs text-[var(--text-muted)]">
+                  solo {dateLabel}
+                </p>
+              )}
+            </div>
+          </li>
+        )
+      })}
     </ul>
   )
 }
