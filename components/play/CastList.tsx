@@ -42,7 +42,7 @@ export default function CastList({ cast }: CastListProps) {
               </Link>
               {dateLabel && (
                 <p className="mt-0.5 text-xs text-[var(--text-muted)]">
-                  solo {dateLabel}
+                  {dateLabel}
                 </p>
               )}
             </div>
