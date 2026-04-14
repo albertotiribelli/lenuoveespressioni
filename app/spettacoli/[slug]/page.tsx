@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { getPlayBySlug } from '@/lib/getPlays'
-import CastList from '@/components/play/CastList'
+import CreditsSection from '@/components/play/CreditsSection'
 import DatesList from '@/components/play/DatesList'
 import ProductionHistory from '@/components/play/ProductionHistory'
 import type { PerformanceDate } from '@/types'
@@ -50,7 +50,7 @@ export default async function SpettacoloPage({ params }: Props) {
       if (!pp.people) continue
       const key = pp.people.id
       if (castMap.has(key)) {
-        castMap.get(key)!.datesSeen.push(d.date)
+        castMap.get(key)?.datesSeen.push(d.date)
       } else {
         castMap.set(key, {
           character_name: pp.character_name,
@@ -127,8 +127,7 @@ export default async function SpettacoloPage({ params }: Props) {
 
           {cast.length > 0 && (
             <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Cast</h2>
-              <CastList cast={cast} />
+              <CreditsSection credits={cast} />
             </section>
           )}
 
