@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { COMPANY } from '@/lib/company'
 
 export default function Footer() {
@@ -10,8 +11,13 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-3">
 
           <div>
-            <p className="font-serif text-lg text-[var(--text)]">{COMPANY.name}</p>
-            <p className="mt-1 text-xs text-[var(--text-muted)]">Compagnia teatrale</p>
+            <Image
+              src="/logo.png"
+              alt={COMPANY.name}
+              width={100}
+              height={50}
+              className="object-contain"
+            />
           </div>
 
           <div className="space-y-1 text-sm text-[var(--text-muted)]">
