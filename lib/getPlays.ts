@@ -3,7 +3,7 @@ import { supabase } from './supabase'
 export async function getPlays() {
   const { data, error } = await supabase
     .from('plays')
-    .select('id, slug, title, short_desc, poster_url, youtube_url')
+    .select('id, slug, title, short_desc, poster_url, trailer_url, youtube_url')
     .order('title', { ascending: true })
 
   if (error) throw error
@@ -20,6 +20,7 @@ export async function getPlayBySlug(slug: string) {
       description,
       short_desc,
       poster_url,
+      trailer_url,
       youtube_url,
       productions (
         id,

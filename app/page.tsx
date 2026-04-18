@@ -1,7 +1,13 @@
 import { Suspense } from 'react'
+import Link from 'next/link'
 import UpcomingDatesSection from '@/components/ui/UpcomingDatesSection'
+import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
+import { getPlays } from '@/lib/getPlays'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const plays = await getPlays()
+  const trailers = (plays ?? []).filter((p) => p.trailer_url)
+
   return (
     <>
       {/* Hero */}
@@ -15,7 +21,9 @@ export default function HomePage() {
           Espressioni
         </h1>
         <p className="mt-6 max-w-md text-[var(--text-muted)]">
-          Teatro che cerca, che rischia, che lascia il segno.
+          Le luci si accenderanno, le musiche partiranno e le battute arriveranno...
+          <br/>
+          La magia del teatro prende vita!
         </p>
       </section>
 
@@ -32,16 +40,39 @@ export default function HomePage() {
         <UpcomingDatesSection />
       </Suspense>
 
-      <div className="section-divider" />
-
-      {/* Video reel placeholder */}
-      <section className="mx-auto max-w-6xl px-6 py-16">
-        <h2 className="mb-2 font-serif text-2xl text-[var(--text)]">Video</h2>
-        <div className="mb-8 h-px w-12 bg-[var(--accent)]" />
-        <div className="flex h-64 items-center justify-center rounded-sm border border-dashed border-[var(--border)] text-[var(--text-muted)]">
-          <span className="text-sm">Video reel — in arrivo</span>
-        </div>
-      </section>
+      {/* Trailers */}
+      {trailers.length > 0 && (
+        <>
+          <div className="section-divider" />
+          <section className="mx-auto max-w-6xl px-6 py-16">
+            <div className="mb-8 flex items-baseline justify-between">
+              <div>
+                <h2 className="font-serif text-2xl text-[var(--text)]">Trailer</h2>
+                <div className="mt-2 h-px w-12 bg-[var(--accent)]" />
+              </div>
+              <Link
+                href="/media"
+                className="text-xs text-[var(--accent)] hover:underline uppercase tracking-wider"
+              >
+                Tutti i video →
+              </Link>
+            </div>
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {trailers.map((play) => (
+                <div key={play.id}>
+                  <YoutubeEmbed url={play.trailer_url} title={`Trailer — ${play.title}`} />
+                  <Link
+                    href={`/spettacoli/${play.slug}`}
+                    className="mt-2 block font-serif text-sm text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
+                  >
+                    {play.title}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
     </>
   )
 }

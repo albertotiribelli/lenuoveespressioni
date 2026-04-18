@@ -148,6 +148,7 @@ export type Database = {
           short_desc: string | null
           slug: string
           title: string
+          trailer_url: string | null
           youtube_url: string | null
         }
         Insert: {
@@ -158,6 +159,7 @@ export type Database = {
           short_desc?: string | null
           slug: string
           title: string
+          trailer_url?: string | null
           youtube_url?: string | null
         }
         Update: {
@@ -168,6 +170,7 @@ export type Database = {
           short_desc?: string | null
           slug?: string
           title?: string
+          trailer_url?: string | null
           youtube_url?: string | null
         }
         Relationships: []
