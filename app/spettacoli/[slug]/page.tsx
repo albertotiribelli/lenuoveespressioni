@@ -4,6 +4,7 @@ import { getPlayBySlug } from '@/lib/getPlays'
 import CreditsSection from '@/components/play/CreditsSection'
 import DatesList from '@/components/play/DatesList'
 import ProductionHistory from '@/components/play/ProductionHistory'
+import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
 import type { PerformanceDate } from '@/types'
 
 interface Props {
@@ -97,6 +98,28 @@ export default async function SpettacoloPage({ params }: Props) {
             </section>
           )}
 
+          {(play.trailer_url || play.youtube_url) && (
+            <section>
+              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Video</h2>
+              {play.trailer_url && (
+                <YoutubeEmbed
+                  url={play.trailer_url}
+                  title={`Trailer — ${play.title}`}
+                />
+              )}
+              {play.youtube_url && (
+                <a
+                  href={play.youtube_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`text-sm text-[var(--accent)] hover:underline${play.trailer_url ? ' mt-3 block' : ''}`}
+                >
+                  Guarda lo spettacolo completo su YouTube →
+                </a>
+              )}
+            </section>
+          )}
+
           {play.productions && play.productions.length > 0 && (
             <section>
               <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Storico produzioni</h2>
@@ -130,21 +153,6 @@ export default async function SpettacoloPage({ params }: Props) {
               <CreditsSection credits={cast} />
             </section>
           )}
-
-          {play.youtube_url && (
-            <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Video</h2>
-              <a
-                href={play.youtube_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-[var(--accent)] hover:underline"
-              >
-                Guarda su YouTube →
-              </a>
-            </section>
-          )}
-
         </aside>
       </div>
     </article>
