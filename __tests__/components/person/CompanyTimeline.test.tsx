@@ -7,6 +7,7 @@ import CompanyTimeline from '@/components/person/CompanyTimeline'
 const history = [
   {
     character_name: 'Amleto',
+    costume_url: null,
     role: 'actor',
     notes: null,
     dates: {
@@ -18,6 +19,7 @@ const history = [
   },
   {
     character_name: 'Estragone',
+    costume_url: null,
     role: 'actor',
     notes: null,
     dates: {

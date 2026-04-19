@@ -100,6 +100,7 @@ export type Database = {
       performance_people: {
         Row: {
           character_name: string | null
+          costume_url: string | null
           date_id: string | null
           id: string
           notes: string | null
@@ -108,6 +109,7 @@ export type Database = {
         }
         Insert: {
           character_name?: string | null
+          costume_url?: string | null
           date_id?: string | null
           id?: string
           notes?: string | null
@@ -116,6 +118,7 @@ export type Database = {
         }
         Update: {
           character_name?: string | null
+          costume_url?: string | null
           date_id?: string | null
           id?: string
           notes?: string | null

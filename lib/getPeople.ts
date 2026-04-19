@@ -35,6 +35,7 @@ export async function getPersonBySlug(slug: string) {
       is_active,
       performance_people (
         character_name,
+        costume_url,
         role,
         notes,
         dates (
