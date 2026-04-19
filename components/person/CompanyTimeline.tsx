@@ -52,7 +52,7 @@ export default function CompanyTimeline({ history }: CompanyTimelineProps) {
               </Link>
               {entry.character_name && (
                 <span className="ml-2 text-sm text-[var(--text-muted)] italic">
-                  nei panni di {entry.character_name}
+                  {entry.role === 'actor' ? 'nei panni di' : 'come'} {entry.character_name}
                 </span>
               )}
             </div>
