@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 
 interface HistoryEntry {
   readonly character_name: string | null
@@ -30,6 +29,16 @@ interface CompanyTimelineProps {
 
 export default function CompanyTimeline({ history, onPlayHover }: CompanyTimelineProps) {
   const [tappedIndex, setTappedIndex] = useState<number | null>(null)
+
+  function handleMobileTap(index: number, costumeUrl: string | null) {
+    if (tappedIndex === index) {
+      setTappedIndex(null)
+      onPlayHover?.(null)
+    } else {
+      setTappedIndex(index)
+      onPlayHover?.(costumeUrl)
+    }
+  }
 
   if (history.length === 0) {
     return (
@@ -73,7 +82,7 @@ export default function CompanyTimeline({ history, onPlayHover }: CompanyTimelin
               {hasCostume && (
                 <button
                   className="md:hidden text-[var(--text-muted)] hover:text-[var(--accent)] transition-colors"
-                  onClick={() => setTappedIndex(isTapped ? null : i)}
+                  onClick={() => handleMobileTap(i, entry.costume_url)}
                   aria-label={isTapped ? 'Nascondi foto' : 'Vedi foto in costume'}
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -83,18 +92,6 @@ export default function CompanyTimeline({ history, onPlayHover }: CompanyTimelin
               )}
             </div>
 
-            {/* Mobile: inline costume photo */}
-            {hasCostume && isTapped && (
-              <div className="mt-2 md:hidden">
-                <Image
-                  src={entry.costume_url ?? ''}
-                  alt={`${plays.title} — foto in costume`}
-                  width={110}
-                  height={147}
-                  className="rounded-sm object-cover"
-                />
-              </div>
-            )}
           </li>
         )
       })}
