@@ -9,12 +9,14 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        gold: '#c9a84c',
-        'theater-bg': '#0a0a0a',
-        'theater-text': '#f0ece4',
+        primary: '#288B9A',
+        accent: '#E94560',
+        'theater-bg': '#1A1B26',
+        'theater-text': '#FFFFFF',
       },
       fontFamily: {
-        serif: ['Georgia', 'Cambria', '"Times New Roman"', 'Times', 'serif'],
+        serif: ['var(--font-cinzel)', 'Georgia', 'serif'],
+        sans: ['var(--font-lato)', 'system-ui', 'sans-serif'],
       },
     },
   },
