@@ -37,6 +37,7 @@ export async function getPlayBySlug(slug: string) {
           performance_people (
             character_name,
             role,
+            sort_order,
             people (
               id,
               slug,

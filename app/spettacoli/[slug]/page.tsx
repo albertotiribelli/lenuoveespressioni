@@ -42,6 +42,7 @@ export default async function SpettacoloPage({ params }: Props) {
   const castMap = new Map<string, {
     character_name: string | null
     role: string
+    sort_order: number | null
     people: NonNullable<typeof productionDates[0]['performance_people'][0]['people']>
     datesSeen: string[]
   }>()
@@ -56,6 +57,7 @@ export default async function SpettacoloPage({ params }: Props) {
         castMap.set(key, {
           character_name: pp.character_name,
           role: pp.role,
+          sort_order: pp.sort_order,
           people: pp.people,
           datesSeen: [d.date],
         })
@@ -63,12 +65,19 @@ export default async function SpettacoloPage({ params }: Props) {
     }
   }
 
-  const cast = Array.from(castMap.values()).map((entry) => ({
-    character_name: entry.character_name,
-    role: entry.role,
-    people: entry.people,
-    onlyDate: entry.datesSeen.length === 1 && totalDates > 1 ? entry.datesSeen[0] : null,
-  }))
+  const cast = Array.from(castMap.values())
+    .sort((a, b) => {
+      if (a.sort_order == null && b.sort_order == null) return 0
+      if (a.sort_order == null) return 1
+      if (b.sort_order == null) return -1
+      return a.sort_order - b.sort_order
+    })
+    .map((entry) => ({
+      character_name: entry.character_name,
+      role: entry.role,
+      people: entry.people,
+      onlyDate: entry.datesSeen.length === 1 && totalDates > 1 ? entry.datesSeen[0] : null,
+    }))
 
   return (
     <article className="mx-auto max-w-5xl px-6 py-20">

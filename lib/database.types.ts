@@ -106,6 +106,7 @@ export type Database = {
           notes: string | null
           person_id: string | null
           role: string
+          sort_order: number | null
         }
         Insert: {
           character_name?: string | null
@@ -115,6 +116,7 @@ export type Database = {
           notes?: string | null
           person_id?: string | null
           role: string
+          sort_order?: number | null
         }
         Update: {
           character_name?: string | null
@@ -124,6 +126,7 @@ export type Database = {
           notes?: string | null
           person_id?: string | null
           role?: string
+          sort_order?: number | null
         }
         Relationships: [
           {
