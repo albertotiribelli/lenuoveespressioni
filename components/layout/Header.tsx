@@ -17,13 +17,13 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/90 backdrop-blur-sm">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 my-1">
         <Link href="/" className="flex items-center" onClick={() => setOpen(false)}>
           <Image
             src="/logo.png"
             alt="Le Nuove Espressioni"
-            width={120}
-            height={60}
+            width={100}
+            height={50}
             className="object-contain"
             priority
           />
