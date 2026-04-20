@@ -11,13 +11,15 @@ export default function Footer() {
         <div className="grid gap-8 sm:grid-cols-3">
 
           <div>
-            <Image
-              src="/logo.png"
-              alt={COMPANY.name}
-              width={100}
-              height={50}
-              className="object-contain"
-            />
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt={COMPANY.name}
+                width={100}
+                height={50}
+                className="object-contain"
+              />
+            </Link>
           </div>
 
           <div className="space-y-1 text-sm text-[var(--text-muted)]">
