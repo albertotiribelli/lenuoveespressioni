@@ -36,7 +36,10 @@ export default async function SpettacoloPage({ params }: Props) {
 
   // Aggregate cast across all dates of the most recent production,
   // flagging people who appear on only one specific date.
-  const productionDates = play.productions?.[0]?.dates ?? []
+  const sortedProductions = [...(play.productions ?? [])].sort((a, b) =>
+    b.season_year.localeCompare(a.season_year)
+  )
+  const productionDates = sortedProductions[0]?.dates ?? []
   const totalDates = productionDates.length
 
   const castMap = new Map<string, {
