@@ -49,4 +49,29 @@ describe('ProductionHistory', () => {
     expect(screen.getByText(/2 date/i)).toBeInTheDocument()
     expect(screen.getByText(/1 data/i)).toBeInTheDocument()
   })
+
+  it('shows date notes when present', () => {
+    const withNotes = [{
+      ...productions[0],
+      dates: [{ ...productions[0].dates[0], notes: 'Serata di gala', gphotos_url: 'https://photos.example.com' }],
+    }]
+    render(<ProductionHistory productions={withNotes} />)
+    expect(screen.getByText('Serata di gala')).toBeInTheDocument()
+  })
+
+  it('renders notes before the foto link', () => {
+    const withBoth = [{
+      ...productions[0],
+      dates: [{ ...productions[0].dates[0], notes: 'Serata di gala', gphotos_url: 'https://photos.example.com' }],
+    }]
+    render(<ProductionHistory productions={withBoth} />)
+    const notes = screen.getByText('Serata di gala')
+    const foto = screen.getByText('Foto →')
+    expect(notes.compareDocumentPosition(foto)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+  })
+
+  it('does not render notes element when notes is null', () => {
+    render(<ProductionHistory productions={productions} />)
+    expect(screen.queryByText('Serata di gala')).not.toBeInTheDocument()
+  })
 })

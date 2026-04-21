@@ -18,7 +18,8 @@ export async function getAllProductions() {
         date,
         time,
         theater_name,
-        city
+        city,
+        notes
       )
     `)
     .order('season_year', { ascending: false })

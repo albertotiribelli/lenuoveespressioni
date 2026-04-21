@@ -5,6 +5,7 @@ interface DateEntry {
   theater_name: string
   city: string | null
   gphotos_url?: string | null
+  notes?: string | null
 }
 
 interface Production {
@@ -43,6 +44,9 @@ export default function ProductionHistory({ productions }: ProductionHistoryProp
                     {' — '}
                     <span>{d.theater_name}</span>
                     {d.city && <span>, {d.city}</span>}
+                    {d.notes && (
+                      <span className="ml-2 italic text-[var(--text-muted)]">{d.notes}</span>
+                    )}
                     {d.gphotos_url && (
                       <a
                         href={d.gphotos_url}

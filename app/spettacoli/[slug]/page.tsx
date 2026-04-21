@@ -146,6 +146,7 @@ export default async function SpettacoloPage({ params }: Props) {
                   theater_name: d.theater_name,
                   city: d.city,
                   gphotos_url: d.gphotos_url,
+                  notes: d.notes,
                 })),
               }))} />
             </section>

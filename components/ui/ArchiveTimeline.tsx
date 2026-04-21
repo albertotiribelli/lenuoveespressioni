@@ -16,6 +16,7 @@ interface ArchiveProduction {
     time: string | null
     theater_name: string
     city: string | null
+    notes?: string | null
   }[]
 }
 
@@ -29,8 +30,6 @@ export default function ArchiveTimeline({ productions }: ArchiveTimelineProps) {
       {productions.map((prod) => {
         const count = prod.dates.length
         const countLabel = count === 1 ? '1 data' : `${count} date`
-        const venues = [...new Set(prod.dates.map((d) => `${d.theater_name}${d.city ? `, ${d.city}` : ''}`))]
-
         return (
           <li key={prod.id} className="relative">
             <span className="absolute -left-[2.125rem] top-1.5 h-4 w-4 rounded-full border-2 border-[var(--accent)] bg-[var(--bg)]" />
@@ -47,9 +46,15 @@ export default function ArchiveTimeline({ productions }: ArchiveTimelineProps) {
               <span className="text-xs text-[var(--text-muted)]">{countLabel}</span>
             </div>
             <ul className="mt-2 space-y-0.5">
-              {venues.map((v) => (
-                <li key={v} className="text-sm text-[var(--text-muted)]">{v}</li>
-              ))}
+              {prod.dates.map((d) => {
+                const venue = d.city ? `${d.theater_name}, ${d.city}` : d.theater_name
+                return (
+                  <li key={d.id} className="text-sm text-[var(--text-muted)]">
+                    {venue}
+                    {d.notes && <span className="ml-2 italic">{d.notes}</span>}
+                  </li>
+                )
+              })}
             </ul>
           </li>
         )

@@ -47,4 +47,18 @@ describe('ArchiveTimeline', () => {
     expect(screen.getByText(/2 date/i)).toBeInTheDocument()
     expect(screen.getByText(/1 data/i)).toBeInTheDocument()
   })
+
+  it('shows date notes when present', () => {
+    const withNotes = [{
+      ...productions[0],
+      dates: [{ ...productions[0].dates[0], notes: 'Prima assoluta' }],
+    }]
+    render(<ArchiveTimeline productions={withNotes} />)
+    expect(screen.getByText('Prima assoluta')).toBeInTheDocument()
+  })
+
+  it('does not render notes when null', () => {
+    render(<ArchiveTimeline productions={productions} />)
+    expect(screen.queryByText('Prima assoluta')).not.toBeInTheDocument()
+  })
 })
