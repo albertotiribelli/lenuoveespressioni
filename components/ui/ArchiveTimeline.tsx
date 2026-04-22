@@ -46,15 +46,22 @@ export default function ArchiveTimeline({ productions }: ArchiveTimelineProps) {
               <span className="text-xs text-[var(--text-muted)]">{countLabel}</span>
             </div>
             <ul className="mt-2 space-y-0.5">
-              {prod.dates.map((d) => {
-                const venue = d.city ? `${d.theater_name}, ${d.city}` : d.theater_name
-                return (
-                  <li key={d.id} className="text-sm text-[var(--text-muted)]">
-                    {venue}
-                    {d.notes && <span className="ml-2 italic">{d.notes}</span>}
-                  </li>
-                )
-              })}
+              {(() => {
+                const seenVenues = new Set<string>()
+                return prod.dates.flatMap((d) => {
+                  const venue = d.city ? `${d.theater_name}, ${d.city}` : d.theater_name
+                  if (!d.notes) {
+                    if (seenVenues.has(venue)) return []
+                    seenVenues.add(venue)
+                  }
+                  return (
+                    <li key={d.id} className="text-sm text-[var(--text-muted)]">
+                      {venue}
+                      {d.notes && <span className="ml-2 italic">{d.notes}</span>}
+                    </li>
+                  )
+                })
+              })()}
             </ul>
           </li>
         )

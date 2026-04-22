@@ -61,4 +61,29 @@ describe('ArchiveTimeline', () => {
     render(<ArchiveTimeline productions={productions} />)
     expect(screen.queryByText('Prima assoluta')).not.toBeInTheDocument()
   })
+
+  it('deduplicates same venue when no notes', () => {
+    const samevenue = [{
+      ...productions[0],
+      dates: [
+        { id: 'd1', date: '2024-11-15', time: null, theater_name: 'Teatro Sociale', city: 'Milano', notes: null },
+        { id: 'd2', date: '2024-11-22', time: null, theater_name: 'Teatro Sociale', city: 'Milano', notes: null },
+      ],
+    }]
+    render(<ArchiveTimeline productions={samevenue} />)
+    expect(screen.getAllByText('Teatro Sociale, Milano')).toHaveLength(1)
+  })
+
+  it('shows same venue twice when one has notes', () => {
+    const mixed = [{
+      ...productions[0],
+      dates: [
+        { id: 'd1', date: '2024-11-15', time: null, theater_name: 'Teatro Sociale', city: 'Milano', notes: null },
+        { id: 'd2', date: '2024-11-22', time: null, theater_name: 'Teatro Sociale', city: 'Milano', notes: 'Serata speciale' },
+      ],
+    }]
+    render(<ArchiveTimeline productions={mixed} />)
+    expect(screen.getAllByText('Teatro Sociale, Milano')).toHaveLength(2)
+    expect(screen.getByText('Serata speciale')).toBeInTheDocument()
+  })
 })
