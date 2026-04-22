@@ -33,7 +33,7 @@ export default function ProductionHistory({ productions }: ProductionHistoryProp
               <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider">{countLabel}</span>
             </div>
             <ul className="mt-2 space-y-1">
-              {prod.dates.map((d) => {
+              {[...prod.dates].sort((a, b) => a.date.localeCompare(b.date)).map((d) => {
                 const formatted = new Date(d.date).toLocaleDateString('it-IT', {
                   day: 'numeric', month: 'long', year: 'numeric',
                 })

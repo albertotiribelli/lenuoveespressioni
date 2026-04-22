@@ -74,4 +74,19 @@ describe('ProductionHistory', () => {
     render(<ProductionHistory productions={productions} />)
     expect(screen.queryByText('Serata di gala')).not.toBeInTheDocument()
   })
+
+  it('renders dates in chronological order regardless of input order', () => {
+    const unsorted = [{
+      ...productions[0],
+      dates: [
+        { id: 'd2', date: '2024-11-22', time: null, theater_name: 'Teatro B', city: null },
+        { id: 'd1', date: '2024-11-15', time: null, theater_name: 'Teatro A', city: null },
+      ],
+    }]
+    render(<ProductionHistory productions={unsorted} />)
+    const items = screen.getAllByRole('listitem')
+    const teatroA = items.findIndex((el) => el.textContent?.includes('Teatro A'))
+    const teatroB = items.findIndex((el) => el.textContent?.includes('Teatro B'))
+    expect(teatroA).toBeLessThan(teatroB)
+  })
 })
