@@ -57,7 +57,7 @@ export default function ArchiveTimeline({ productions }: ArchiveTimelineProps) {
                   return (
                     <li key={d.id} className="text-sm text-[var(--text-muted)]">
                       {venue}
-                      {d.notes && <span className="ml-2 italic">{d.notes}</span>}
+                      {d.notes && <span className="ml-2 italic text-[var(--accent)]">{d.notes}</span>}
                     </li>
                   )
                 })
