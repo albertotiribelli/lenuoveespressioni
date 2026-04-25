@@ -52,7 +52,7 @@ export default async function SpettacoloPage({ params, searchParams }: Props) {
     for (const d of dates) {
       for (const pp of d.performance_people ?? []) {
         if (!pp.people) continue
-        const key = pp.people.id
+        const key = `${pp.people.id}|${pp.role}|${pp.character_name ?? ''}`
         if (castMap.has(key)) {
           castMap.get(key)?.datesSeen.push(d.date)
         } else {

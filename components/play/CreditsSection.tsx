@@ -50,7 +50,7 @@ export default function CreditsSection({ credits }: CreditsSectionProps) {
                   : null
 
                 return (
-                  <li key={entry.people.id} className="grid grid-cols-2 gap-4 py-3 items-start">
+                  <li key={`${entry.people.id}-${entry.character_name ?? ''}`} className="grid grid-cols-2 gap-4 py-3 items-start">
                     <span className="italic text-[var(--text-muted)]">{entry.character_name}</span>
                     <div className="text-right">
                       <Link
@@ -70,7 +70,7 @@ export default function CreditsSection({ credits }: CreditsSectionProps) {
           ) : (
             <ul className="space-y-2">
               {entries.map((entry) => (
-                <li key={entry.people.id}>
+                <li key={`${entry.people.id}-${entry.character_name ?? ''}`}>
                   <Link
                     href={`/attori/${entry.people.slug}`}
                     className="text-[var(--text)] hover:text-[var(--accent)] transition-colors"
