@@ -1,3 +1,5 @@
+'use client'
+
 interface DateEntry {
   id: string
   date: string
@@ -17,17 +19,25 @@ interface Production {
 
 interface ProductionHistoryProps {
   readonly productions: Production[]
+  readonly activeYear?: string | null
+  readonly onProductionHover?: (year: string | null) => void
 }
 
-export default function ProductionHistory({ productions }: ProductionHistoryProps) {
+export default function ProductionHistory({ productions, activeYear, onProductionHover }: ProductionHistoryProps) {
   return (
     <div className="space-y-6">
       {productions.map((prod) => {
         const count = prod.dates.length
         const countLabel = count === 1 ? '1 data' : `${count} date`
+        const isActive = activeYear == null || activeYear === prod.season_year
 
         return (
-          <div key={prod.id} className="border-l-2 border-[var(--accent)] pl-4">
+          <div
+            key={prod.id}
+            className={`border-l-2 pl-4 transition-opacity duration-200 ${isActive ? 'border-[var(--accent)] opacity-100' : 'border-[var(--border)] opacity-40'}`}
+            onMouseEnter={() => onProductionHover?.(prod.season_year)}
+            onMouseLeave={() => onProductionHover?.(null)}
+          >
             <div className="flex items-baseline justify-between">
               <span className="font-serif text-xl text-[var(--accent)]">{prod.season_year}</span>
               <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider">{countLabel}</span>

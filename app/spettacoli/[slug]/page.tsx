@@ -1,10 +1,7 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import { getPlayBySlug } from '@/lib/getPlays'
-import CreditsSection from '@/components/play/CreditsSection'
-import DatesList from '@/components/play/DatesList'
-import ProductionHistory from '@/components/play/ProductionHistory'
-import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
+import SpettacoloBody from '@/components/play/SpettacoloBody'
 import type { PerformanceDate } from '@/types'
 
 interface Props {
@@ -34,53 +31,71 @@ export default async function SpettacoloPage({ params }: Props) {
     .filter((d) => d.date >= new Date().toISOString().slice(0, 10))
     .sort((a, b) => a.date.localeCompare(b.date))
 
-  // Aggregate cast across all dates of the most recent production,
-  // flagging people who appear on only one specific date.
   const sortedProductions = [...(play.productions ?? [])].sort((a, b) =>
     b.season_year.localeCompare(a.season_year)
   )
-  const productionDates = sortedProductions[0]?.dates ?? []
-  const totalDates = productionDates.length
 
-  const castMap = new Map<string, {
-    character_name: string | null
-    role: string
-    sort_order: number | null
-    people: NonNullable<typeof productionDates[0]['performance_people'][0]['people']>
-    datesSeen: string[]
-  }>()
+  const castsPerProduction = sortedProductions.map((prod) => {
+    const dates = prod.dates ?? []
+    const totalDates = dates.length
+    type PeopleType = NonNullable<typeof dates[0]['performance_people'][0]['people']>
+    const castMap = new Map<string, {
+      character_name: string | null
+      role: string
+      sort_order: number | null
+      people: PeopleType
+      datesSeen: string[]
+    }>()
 
-  for (const d of productionDates) {
-    for (const pp of d.performance_people ?? []) {
-      if (!pp.people) continue
-      const key = pp.people.id
-      if (castMap.has(key)) {
-        castMap.get(key)?.datesSeen.push(d.date)
-      } else {
-        castMap.set(key, {
-          character_name: pp.character_name,
-          role: pp.role,
-          sort_order: pp.sort_order,
-          people: pp.people,
-          datesSeen: [d.date],
-        })
+    for (const d of dates) {
+      for (const pp of d.performance_people ?? []) {
+        if (!pp.people) continue
+        const key = pp.people.id
+        if (castMap.has(key)) {
+          castMap.get(key)?.datesSeen.push(d.date)
+        } else {
+          castMap.set(key, {
+            character_name: pp.character_name,
+            role: pp.role,
+            sort_order: pp.sort_order,
+            people: pp.people,
+            datesSeen: [d.date],
+          })
+        }
       }
     }
-  }
 
-  const cast = Array.from(castMap.values())
-    .sort((a, b) => {
-      if (a.sort_order == null && b.sort_order == null) return 0
-      if (a.sort_order == null) return 1
-      if (b.sort_order == null) return -1
-      return a.sort_order - b.sort_order
-    })
-    .map((entry) => ({
-      character_name: entry.character_name,
-      role: entry.role,
-      people: entry.people,
-      onlyDate: entry.datesSeen.length === 1 && totalDates > 1 ? entry.datesSeen[0] : null,
-    }))
+    const cast = Array.from(castMap.values())
+      .sort((a, b) => {
+        if (a.sort_order == null && b.sort_order == null) return 0
+        if (a.sort_order == null) return 1
+        if (b.sort_order == null) return -1
+        return a.sort_order - b.sort_order
+      })
+      .map((entry) => ({
+        character_name: entry.character_name,
+        role: entry.role,
+        people: entry.people,
+        onlyDate: entry.datesSeen.length === 1 && totalDates > 1 ? entry.datesSeen[0] : null,
+      }))
+
+    return { season_year: prod.season_year, cast }
+  }).filter((p) => p.cast.length > 0)
+
+  const productions = sortedProductions.map((p) => ({
+    id: p.id,
+    season_year: p.season_year,
+    notes: p.notes,
+    dates: (p.dates ?? []).map((d) => ({
+      id: d.id,
+      date: d.date,
+      time: d.time,
+      theater_name: d.theater_name,
+      city: d.city,
+      gphotos_url: d.gphotos_url,
+      notes: d.notes,
+    })),
+  }))
 
   return (
     <article className="mx-auto max-w-5xl px-6 py-20">
@@ -101,73 +116,15 @@ export default async function SpettacoloPage({ params }: Props) {
       <h1 className="mb-2 font-serif text-4xl text-[var(--text)]">{play.title}</h1>
       <div className="mb-10 h-px w-12 bg-[var(--accent)]" />
 
-      <div className="grid gap-12 lg:grid-cols-[1fr_340px]">
-        <div className="space-y-10">
-          {play.description && (
-            <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Sinossi</h2>
-              <p className="leading-relaxed text-[var(--text-muted)]">{play.description}</p>
-            </section>
-          )}
-
-          {(play.trailer_url || play.youtube_url) && (
-            <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Video</h2>
-              {play.trailer_url && (
-                <YoutubeEmbed
-                  url={play.trailer_url}
-                  title={`Trailer — ${play.title}`}
-                />
-              )}
-              {play.youtube_url && (
-                <a
-                  href={play.youtube_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`text-sm text-[var(--accent)] hover:underline${play.trailer_url ? ' mt-3 block' : ''}`}
-                >
-                  Guarda lo spettacolo completo su YouTube →
-                </a>
-              )}
-            </section>
-          )}
-
-          {play.productions && play.productions.length > 0 && (
-            <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Storico produzioni</h2>
-              <ProductionHistory productions={play.productions.map((p) => ({
-                id: p.id,
-                season_year: p.season_year,
-                notes: p.notes,
-                dates: (p.dates ?? []).map((d) => ({
-                  id: d.id,
-                  date: d.date,
-                  time: d.time,
-                  theater_name: d.theater_name,
-                  city: d.city,
-                  gphotos_url: d.gphotos_url,
-                  notes: d.notes,
-                })),
-              }))} />
-            </section>
-          )}
-        </div>
-
-        <aside className="space-y-10">
-          {upcomingDates.length > 0 && (
-            <section>
-              <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Prossime date</h2>
-              <DatesList dates={upcomingDates} />
-            </section>
-          )}
-
-          {cast.length > 0 && (
-            <section>
-              <CreditsSection credits={cast} />
-            </section>
-          )}
-        </aside>
-      </div>
+      <SpettacoloBody
+        description={play.description}
+        trailerUrl={play.trailer_url}
+        youtubeUrl={play.youtube_url}
+        playTitle={play.title}
+        productions={productions}
+        castsPerProduction={castsPerProduction}
+        upcomingDates={upcomingDates}
+      />
     </article>
   )
 }
