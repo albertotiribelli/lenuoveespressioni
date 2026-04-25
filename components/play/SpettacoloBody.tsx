@@ -37,6 +37,7 @@ interface SpettacoloBodyProps {
   readonly productions: readonly ProductionForHistory[]
   readonly castsPerProduction: readonly { season_year: string; cast: readonly CreditEntry[] }[]
   readonly upcomingDates: readonly PerformanceDate[]
+  readonly initialYear?: string
 }
 
 export default function SpettacoloBody({
@@ -47,8 +48,12 @@ export default function SpettacoloBody({
   productions,
   castsPerProduction,
   upcomingDates,
+  initialYear,
 }: SpettacoloBodyProps) {
-  const [clickedYear, setClickedYear] = useState(castsPerProduction[0]?.season_year ?? '')
+  const defaultYear = castsPerProduction.find((p) => p.season_year === initialYear)?.season_year
+    ?? castsPerProduction[0]?.season_year
+    ?? ''
+  const [clickedYear, setClickedYear] = useState(defaultYear)
   const [hoveredYear, setHoveredYear] = useState<string | null>(null)
 
   const activeYear = hoveredYear ?? clickedYear

@@ -66,7 +66,7 @@ export default function CompanyTimeline({ history, onPlayHover }: CompanyTimelin
             </span>
             <div className="mt-1 flex flex-wrap items-center gap-x-2">
               <Link
-                href={`/spettacoli/${plays.slug}`}
+                href={`/spettacoli/${plays.slug}?year=${season_year}`}
                 className="font-serif text-[var(--text)] hover:text-[var(--accent)] transition-colors"
                 onMouseEnter={() => hasCostume && onPlayHover?.(entry.costume_url)}
                 onMouseLeave={() => onPlayHover?.(null)}

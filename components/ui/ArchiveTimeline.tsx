@@ -38,7 +38,7 @@ export default function ArchiveTimeline({ productions }: ArchiveTimelineProps) {
             </span>
             <div className="mt-1 flex items-baseline justify-between">
               <Link
-                href={`/spettacoli/${prod.plays.slug}`}
+                href={`/spettacoli/${prod.plays.slug}?year=${prod.season_year}`}
                 className="font-serif text-xl text-[var(--text)] hover:text-[var(--accent)] transition-colors"
               >
                 {prod.plays.title}

@@ -6,10 +6,12 @@ import type { PerformanceDate } from '@/types'
 
 interface Props {
   readonly params: Promise<{ slug: string }>
+  readonly searchParams: Promise<{ year?: string }>
 }
 
-export default async function SpettacoloPage({ params }: Props) {
+export default async function SpettacoloPage({ params, searchParams }: Props) {
   const { slug } = await params
+  const { year } = await searchParams
   const play = await getPlayBySlug(slug).catch(() => null)
   if (!play) notFound()
 
@@ -124,6 +126,7 @@ export default async function SpettacoloPage({ params }: Props) {
         productions={productions}
         castsPerProduction={castsPerProduction}
         upcomingDates={upcomingDates}
+        initialYear={year}
       />
     </article>
   )
