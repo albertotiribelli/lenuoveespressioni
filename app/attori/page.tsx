@@ -27,49 +27,43 @@ export default async function AttoriPage({ searchParams }: Props) {
 
   if ('edespressionisimili' in params) {
     const raw = await getPeopleTimeline()
-    const currentYear = new Date().getFullYear()
 
     type Entry = {
       id: string
       name: string
       role: string
-      startYear: number
-      endYear: number
       isActive: boolean
+      years: string[]
     }
 
-    const people: Entry[] = (raw ?? []).flatMap((person) => {
-      const perfDates = (person.performance_people ?? [])
-        .map((pp) => pp.dates?.date)
-        .filter((d): d is string => !!d)
+    const people: Entry[] = (raw ?? [])
+      .map((person) => {
+        const years = [
+          ...new Set(
+            (person.performance_people ?? [])
+              .map((pp) => pp.dates?.date?.slice(0, 4))
+              .filter((y): y is string => !!y),
+          ),
+        ].sort((a, b) => a.localeCompare(b))
 
-      const startYear = person.joined_at
-        ? new Date(person.joined_at).getFullYear()
-        : perfDates.length > 0
-          ? Math.min(...perfDates.map((d) => new Date(d).getFullYear()))
-          : null
+        return { id: person.id, name: person.name, role: person.role, isActive: person.is_active ?? false, years }
+      })
+      .filter((p) => p.years.length > 0)
 
-      const endYear = person.is_active
-        ? currentYear
-        : perfDates.length > 0
-          ? Math.max(...perfDates.map((d) => new Date(d).getFullYear()))
-          : null
+    people.sort(
+      (a, b) =>
+        (a.years[0] ?? '').localeCompare(b.years[0] ?? '') ||
+        lastName(a.name).localeCompare(lastName(b.name), 'it'),
+    )
 
-      if (startYear == null || endYear == null) return []
-      return [{ id: person.id, name: person.name, role: person.role, startYear, endYear, isActive: person.is_active ?? false }]
-    })
-
-    people.sort((a, b) => a.startYear - b.startYear || lastName(a.name).localeCompare(lastName(b.name), 'it'))
-
-    const minYear = people.length > 0 ? Math.min(...people.map((p) => p.startYear)) : currentYear
-    const maxYear = currentYear
+    const allYears = [...new Set(people.flatMap((p) => p.years))].sort((a, b) => a.localeCompare(b))
 
     return (
       <section className="mx-auto max-w-6xl px-6 py-20">
         <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[var(--accent)]">Le Nuove Espressioni</p>
         <h1 className="mb-2 font-serif text-4xl text-[var(--text)]">Storia della Compagnia</h1>
         <div className="mb-10 h-px w-12 bg-[var(--accent)]" />
-        <MembershipTimeline people={people} minYear={minYear} maxYear={maxYear} />
+        <MembershipTimeline people={people} allYears={allYears} />
       </section>
     )
   }

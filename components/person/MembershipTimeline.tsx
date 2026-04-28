@@ -1,3 +1,5 @@
+import { Fragment } from 'react'
+
 const ROLE_COLORS: Record<string, string> = {
   actor: '#E94560',
   director: '#7EB8D4',
@@ -16,122 +18,99 @@ export interface TimelinePerson {
   id: string
   name: string
   role: string
-  startYear: number
-  endYear: number
   isActive: boolean
+  years: string[]
 }
 
 interface Props {
-  people: TimelinePerson[]
-  minYear: number
-  maxYear: number
+  readonly people: TimelinePerson[]
+  readonly allYears: string[]
 }
 
-export default function MembershipTimeline({ people, minYear, maxYear }: Props) {
-  const span = maxYear - minYear + 1
+const COL_W = 48
 
-  function pct(year: number) {
-    return ((year - minYear) / span) * 100
+function computeSegments(yearsSet: Set<string>, allYears: string[]) {
+  const segs: Array<{ participated: boolean; count: number; startYear: string }> = []
+  for (const year of allYears) {
+    const participated = yearsSet.has(year)
+    const last = segs.at(-1)
+    if (last?.participated === participated) {
+      last.count++
+    } else {
+      segs.push({ participated, count: 1, startYear: year })
+    }
   }
+  return segs
+}
 
-  const tickYears = Array.from({ length: span }, (_, i) => minYear + i).filter(
-    (y) => y === minYear || y === maxYear || y % 2 === 0,
-  )
-
+export default function MembershipTimeline({ people, allYears }: Props) {
   const rolesPresent = [...new Set(people.map((p) => p.role))]
 
   return (
     <div className="overflow-x-auto">
-      <div style={{ minWidth: '560px' }}>
-        {/* Year labels */}
-        <div className="relative mb-1" style={{ marginLeft: '160px', height: '20px' }}>
-          {tickYears.map((year) => (
-            <span
-              key={year}
-              style={{ left: `${pct(year)}%` }}
-              className="absolute -translate-x-1/2 text-xs text-[var(--text-muted)]"
-            >
+      <div style={{ minWidth: `${160 + allYears.length * COL_W}px` }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `160px repeat(${allYears.length}, ${COL_W}px)`,
+          }}
+        >
+          {/* Header: year labels */}
+          <div />
+          {allYears.map((year) => (
+            <div key={year} className="pb-3 text-center text-xs text-[var(--text-muted)]">
               {year}
-            </span>
+            </div>
           ))}
-        </div>
 
-        {/* Tick marks */}
-        <div className="relative mb-4" style={{ marginLeft: '160px', height: '8px' }}>
-          {tickYears.map((year) => (
-            <div
-              key={year}
-              style={{ left: `${pct(year)}%` }}
-              className="absolute top-0 h-2 w-px bg-[var(--border)]"
-            />
-          ))}
-        </div>
+          {/* Separator */}
+          <div
+            style={{ gridColumn: `1 / span ${allYears.length + 1}` }}
+            className="mb-3 h-px bg-[var(--border)]"
+          />
 
-        {/* Rows */}
-        <div className="space-y-1">
+          {/* Person rows */}
           {people.map((person) => {
+            const yearsSet = new Set(person.years)
             const color = ROLE_COLORS[person.role] ?? ROLE_COLORS.other
-            const barLeft = pct(person.startYear)
-            const barRight = pct(person.endYear + 1)
-            const barWidth = barRight - barLeft
-            const label = `${person.startYear} – ${person.isActive ? 'presente' : person.endYear}`
+            const segments = computeSegments(yearsSet, allYears)
 
             return (
-              <div key={person.id} className="flex items-center">
+              <Fragment key={person.id}>
+                {/* Name */}
                 <div
-                  className="flex-shrink-0 pr-4 text-right text-xs text-[var(--text)]"
-                  style={{ width: '160px' }}
+                  className="flex items-center justify-end pr-4 text-xs text-[var(--text)]"
+                  style={{ height: '22px' }}
                 >
                   {person.name}
                 </div>
-                <div className="relative flex-1" style={{ height: '18px' }}>
-                  {/* Grid lines */}
-                  {tickYears.map((year) => (
-                    <div
-                      key={year}
-                      style={{ left: `${pct(year)}%` }}
-                      className="absolute inset-y-0 w-px bg-[var(--border)] opacity-30"
-                    />
-                  ))}
-                  {/* Bar */}
+
+                {/* Merged segments */}
+                {segments.map((seg) => (
                   <div
-                    title={label}
-                    style={{
-                      position: 'absolute',
-                      left: `${barLeft}%`,
-                      width: `${barWidth}%`,
-                      top: '3px',
-                      bottom: '3px',
-                      backgroundColor: color,
-                      opacity: person.isActive ? 0.9 : 0.35,
-                      borderRadius: '2px',
-                    }}
-                  />
-                  {/* Present-day arrow for active members */}
-                  {person.isActive && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: `${barRight}%`,
-                        top: '3px',
-                        bottom: '3px',
-                        width: 0,
-                        height: 0,
-                        borderTop: '6px solid transparent',
-                        borderBottom: '6px solid transparent',
-                        borderLeft: `6px solid ${color}`,
-                        opacity: 0.9,
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
+                    key={seg.startYear}
+                    style={{ gridColumn: `span ${seg.count}`, height: '22px', display: 'flex', alignItems: 'center' }}
+                  >
+                    {seg.participated && (
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '12px',
+                          backgroundColor: color,
+                          opacity: person.isActive ? 0.9 : 0.4,
+                          borderRadius: '3px',
+                        }}
+                      />
+                    )}
+                  </div>
+                ))}
+              </Fragment>
             )
           })}
         </div>
 
         {/* Legend */}
-        <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[var(--border)] pt-6">
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[var(--border)] pt-6">
           {rolesPresent.map((role) => (
             <div key={role} className="flex items-center gap-2">
               <div
@@ -146,8 +125,8 @@ export default function MembershipTimeline({ people, minYear, maxYear }: Props) 
             </div>
           ))}
           <div className="flex items-center gap-3 text-xs text-[var(--text-muted)]">
-            <span className="opacity-90">▬ attivo</span>
-            <span className="opacity-35">▬ ex membro</span>
+            <span style={{ opacity: 0.9 }}>▬ attivo</span>
+            <span style={{ opacity: 0.4 }}>▬ ex membro</span>
           </div>
         </div>
       </div>
