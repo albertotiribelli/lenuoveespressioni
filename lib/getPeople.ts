@@ -31,6 +31,26 @@ export async function getActivePeople() {
   return data
 }
 
+export async function getPeopleTimeline() {
+  const { data, error } = await supabase
+    .from('people')
+    .select(`
+      id,
+      name,
+      role,
+      joined_at,
+      is_active,
+      performance_people (
+        dates (
+          date
+        )
+      )
+    `)
+    .order('name', { ascending: true })
+  if (error) throw error
+  return data
+}
+
 export async function getPersonBySlug(slug: string) {
   const { data, error } = await supabase
     .from('people')
