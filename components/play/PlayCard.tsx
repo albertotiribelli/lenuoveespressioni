@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import type { UpcomingDate } from '@/types'
+import { formatDateItLongWithWeekday } from '@/lib/formatDate'
 
 interface PlayCardProps {
   upcomingDate: UpcomingDate
@@ -10,13 +11,7 @@ export default function PlayCard({ upcomingDate }: PlayCardProps) {
   const play = upcomingDate.productions?.plays
   if (!play) return null
 
-  const dateObj = new Date(upcomingDate.date)
-  const formattedDate = dateObj.toLocaleDateString('it-IT', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
+  const formattedDate = formatDateItLongWithWeekday(upcomingDate.date)
 
   return (
     <Link
