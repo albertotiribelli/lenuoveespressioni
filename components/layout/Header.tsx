@@ -6,6 +6,7 @@ import Image from 'next/image'
 
 const navLinks = [
   { href: '/spettacoli', label: 'Spettacoli' },
+  { href: '/attori', label: 'Compagnia' },
   { href: '/chi-siamo', label: 'Chi Siamo' },
   { href: '/archivio', label: 'Archivio' },
   { href: '/media', label: 'Media' },

@@ -46,7 +46,7 @@ export default function ChiSiamoPage() {
         </p>
 
         <p>
-          Durante la gestione di Stefania Belotti sono stati realizzati altri 5 spettacoli
+          Durante la gestione di Stefania Belotti sono stati realizzati altri 14 spettacoli
           principali, con la prima al "La Campanella" a cavallo di ogni primavera ed estate,
           e la replica, solitamente nello stesso teatro, tra autunno e inverno dello stesso anno.
         </p>
