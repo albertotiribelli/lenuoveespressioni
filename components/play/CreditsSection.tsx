@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { formatDateItLong } from '@/lib/formatDate'
 
 interface CreditEntry {
   character_name: string | null
@@ -44,9 +45,7 @@ export default function CreditsSection({ credits }: CreditsSectionProps) {
             <ul className="divide-y divide-[var(--border)]">
               {entries.map((entry) => {
                 const dateLabel = entry.onlyDate
-                  ? new Date(entry.onlyDate).toLocaleDateString('it-IT', {
-                      day: 'numeric', month: 'long', year: 'numeric',
-                    })
+                  ? formatDateItLong(entry.onlyDate)
                   : null
 
                 return (

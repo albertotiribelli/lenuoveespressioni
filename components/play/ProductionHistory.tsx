@@ -1,5 +1,7 @@
 'use client'
 
+import { formatDateItLong } from '@/lib/formatDate'
+
 interface DateEntry {
   id: string
   date: string
@@ -44,9 +46,7 @@ export default function ProductionHistory({ productions, activeYear, onProductio
             </div>
             <ul className="mt-2 space-y-1">
               {[...prod.dates].sort((a, b) => a.date.localeCompare(b.date)).map((d) => {
-                const formatted = new Date(d.date).toLocaleDateString('it-IT', {
-                  day: 'numeric', month: 'long', year: 'numeric',
-                })
+                const formatted = formatDateItLong(d.date)
                 return (
                   <li key={d.id} className="text-sm text-[var(--text-muted)]">
                     {formatted}

@@ -1,4 +1,5 @@
 import type { PerformanceDate } from '@/types'
+import { formatDateItLongWithWeekday } from '@/lib/formatDate'
 
 interface DatesListProps {
   dates: PerformanceDate[]
@@ -16,13 +17,7 @@ export default function DatesList({ dates }: DatesListProps) {
   return (
     <ul className="divide-y divide-[var(--border)]">
       {dates.map((d) => {
-        const dateObj = new Date(d.date)
-        const formattedDate = dateObj.toLocaleDateString('it-IT', {
-          weekday: 'short',
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        })
+        const formattedDate = formatDateItLongWithWeekday(d.date)
 
         return (
           <li key={d.id} className="py-3">

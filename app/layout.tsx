@@ -9,14 +9,14 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 const cinzel = Cinzel({
   subsets: ['latin'],
   variable: '--font-cinzel',
-  display: 'swap',
+  display: 'optional',
 })
 
 const lato = Lato({
   subsets: ['latin'],
   weight: ['300', '400', '700'],
   variable: '--font-lato',
-  display: 'swap',
+  display: 'optional',
 })
 
 export const metadata: Metadata = {
