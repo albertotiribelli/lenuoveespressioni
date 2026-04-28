@@ -49,11 +49,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  readonly children: React.ReactNode
 }) {
   return (
     <html lang="it" className={`dark ${cinzel.variable} ${lato.variable}`}>
-      <body className="flex min-h-screen flex-col">
+      <body className="flex min-h-dvh flex-col">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
