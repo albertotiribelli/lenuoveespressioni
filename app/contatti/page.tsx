@@ -1,4 +1,15 @@
+import type { Metadata } from 'next'
 import { COMPANY } from '@/lib/company'
+
+export const metadata: Metadata = {
+  title: 'Contatti',
+  description: 'Contatta la compagnia teatrale Le Nuove Espressioni per collaborazioni, ospitalità e informazioni sugli spettacoli.',
+  openGraph: {
+    title: 'Contatti — Le Nuove Espressioni',
+    description: 'Contatta la compagnia teatrale Le Nuove Espressioni per collaborazioni, ospitalità e informazioni sugli spettacoli.',
+    type: 'website',
+  },
+}
 
 export default function ContattiPage() {
   return (

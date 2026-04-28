@@ -1,5 +1,16 @@
+import type { Metadata } from 'next'
 import { getPlays } from '@/lib/getPlays'
 import PlayGrid from '@/components/play/PlayGrid'
+
+export const metadata: Metadata = {
+  title: 'Spettacoli',
+  description: 'Il repertorio della compagnia teatrale Le Nuove Espressioni: tutti gli spettacoli dal 2006 a oggi.',
+  openGraph: {
+    title: 'Spettacoli — Le Nuove Espressioni',
+    description: 'Il repertorio della compagnia teatrale Le Nuove Espressioni: tutti gli spettacoli dal 2006 a oggi.',
+    type: 'website',
+  },
+}
 
 export default async function SpettacoliPage() {
   const plays = await getPlays()

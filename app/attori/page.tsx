@@ -1,5 +1,16 @@
+import type { Metadata } from 'next'
 import { getActivePeople } from '@/lib/getPeople'
 import PersonCard from '@/components/person/PersonCard'
+
+export const metadata: Metadata = {
+  title: 'Attori',
+  description: 'I membri della compagnia teatrale Le Nuove Espressioni: attori, registi e tecnici.',
+  openGraph: {
+    title: 'Attori — Le Nuove Espressioni',
+    description: 'I membri della compagnia teatrale Le Nuove Espressioni: attori, registi e tecnici.',
+    type: 'website',
+  },
+}
 
 export default async function AttoriPage() {
   const people = await getActivePeople()

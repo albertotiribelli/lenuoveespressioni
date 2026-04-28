@@ -1,6 +1,17 @@
+import type { Metadata } from 'next'
 import { getPlays } from '@/lib/getPlays'
 import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Media',
+  description: 'Trailer e video degli spettacoli della compagnia teatrale Le Nuove Espressioni.',
+  openGraph: {
+    title: 'Media — Le Nuove Espressioni',
+    description: 'Trailer e video degli spettacoli della compagnia teatrale Le Nuove Espressioni.',
+    type: 'website',
+  },
+}
 
 export default async function MediaPage() {
   const plays = await getPlays()

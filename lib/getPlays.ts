@@ -1,5 +1,15 @@
 import { supabase } from './supabase'
 
+export async function getPlayMeta(slug: string) {
+  const { data, error } = await supabase
+    .from('plays')
+    .select('title, description, short_desc, poster_url')
+    .eq('slug', slug)
+    .single()
+  if (error) throw error
+  return data
+}
+
 export async function getPlays() {
   const { data, error } = await supabase
     .from('plays')

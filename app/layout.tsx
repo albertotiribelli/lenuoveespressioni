@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { SITE_URL } from '@/lib/siteConfig'
 
 const cinzel = Cinzel({
   subsets: ['latin'],
@@ -20,8 +21,17 @@ const lato = Lato({
 })
 
 export const metadata: Metadata = {
-  title: 'Le Nuove Espressioni',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Le Nuove Espressioni',
+    template: '%s — Le Nuove Espressioni',
+  },
   description: 'Compagnia teatrale Le Nuove Espressioni — spettacoli, attori e archivio.',
+  openGraph: {
+    siteName: 'Le Nuove Espressioni',
+    locale: 'it_IT',
+    type: 'website',
+  },
   icons: {
     icon: [
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },

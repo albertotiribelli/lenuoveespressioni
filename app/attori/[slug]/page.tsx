@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
-import { getPersonBySlug } from '@/lib/getPeople'
+import type { Metadata } from 'next'
+import { getPersonBySlug, getPersonMeta } from '@/lib/getPeople'
 import AttoreLayout from '@/components/person/AttoreLayout'
 
 const ROLE_LABELS: Record<string, string> = {
@@ -11,6 +12,29 @@ const ROLE_LABELS: Record<string, string> = {
 
 interface Props {
   readonly params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const person = await getPersonMeta(slug).catch(() => null)
+  if (!person) return {}
+
+  const roleLabel = ROLE_LABELS[person.role] ?? person.role
+  const description = person.bio
+    ?? `${person.name}, ${roleLabel} della compagnia teatrale Le Nuove Espressioni.`
+  const truncated = description.length > 155 ? description.slice(0, 152) + '…' : description
+
+  return {
+    title: person.name,
+    description: truncated,
+    alternates: { canonical: `/attori/${slug}` },
+    openGraph: {
+      title: `${person.name} — Le Nuove Espressioni`,
+      description: truncated,
+      type: 'website',
+      ...(person.photo_url && { images: [{ url: person.photo_url }] }),
+    },
+  }
 }
 
 export default async function AttorePage({ params }: Props) {

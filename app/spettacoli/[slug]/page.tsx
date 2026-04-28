@@ -1,12 +1,34 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
-import { getPlayBySlug } from '@/lib/getPlays'
+import type { Metadata } from 'next'
+import { getPlayBySlug, getPlayMeta } from '@/lib/getPlays'
 import SpettacoloBody from '@/components/play/SpettacoloBody'
 import type { PerformanceDate } from '@/types'
 
 interface Props {
   readonly params: Promise<{ slug: string }>
   readonly searchParams: Promise<{ year?: string }>
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params
+  const play = await getPlayMeta(slug).catch(() => null)
+  if (!play) return {}
+
+  const description = play.description ?? play.short_desc ?? `Lo spettacolo ${play.title} della compagnia teatrale Le Nuove Espressioni.`
+  const truncated = description.length > 155 ? description.slice(0, 152) + '…' : description
+
+  return {
+    title: play.title,
+    description: truncated,
+    alternates: { canonical: `/spettacoli/${slug}` },
+    openGraph: {
+      title: `${play.title} — Le Nuove Espressioni`,
+      description: truncated,
+      type: 'website',
+      ...(play.poster_url && { images: [{ url: play.poster_url }] }),
+    },
+  }
 }
 
 export default async function SpettacoloPage({ params, searchParams }: Props) {
