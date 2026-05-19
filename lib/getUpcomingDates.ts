@@ -1,7 +1,10 @@
-// lib/getUpcomingDates.ts  ← first function we build
 import { supabase } from './supabase'
 
 export async function getUpcomingDates() {
+  const twoWeeksAgo = new Date()
+  twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14)
+  const from = twoWeeksAgo.toISOString().slice(0, 10)
+
   const { data, error } = await supabase
     .from('dates')
     .select(`
@@ -21,9 +24,9 @@ export async function getUpcomingDates() {
         )
       )
     `)
-    .gte('date', new Date().toISOString())   // from today forward
+    .gte('date', from)
     .order('date', { ascending: true })
-    .limit(10)
+    .limit(20)
 
   if (error) throw error
   return data
