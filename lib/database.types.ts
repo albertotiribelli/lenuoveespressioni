@@ -24,6 +24,7 @@ export type Database = {
           notes: string | null
           production_id: string | null
           theater_name: string
+          tickets_url: string | null
           time: string | null
         }
         Insert: {
@@ -35,6 +36,7 @@ export type Database = {
           notes?: string | null
           production_id?: string | null
           theater_name: string
+          tickets_url?: string | null
           time?: string | null
         }
         Update: {
@@ -46,6 +48,7 @@ export type Database = {
           notes?: string | null
           production_id?: string | null
           theater_name?: string
+          tickets_url?: string | null
           time?: string | null
         }
         Relationships: [
