@@ -14,6 +14,7 @@ export async function getUpcomingDates() {
       theater_name,
       city,
       notes,
+      tickets_url,
       productions (
         season_year,
         plays (

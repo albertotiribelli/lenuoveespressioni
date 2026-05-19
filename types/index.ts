@@ -42,6 +42,7 @@ export interface PerformanceDate {
   city: string | null
   gphotos_url: string | null
   notes: string | null
+  tickets_url: string | null
   created_at: string | null
 }
 
@@ -62,6 +63,7 @@ export interface UpcomingDate {
   theater_name: string
   city: string | null
   notes: string | null
+  tickets_url: string | null
   productions: {
     season_year: string
     plays: {

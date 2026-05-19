@@ -21,7 +21,7 @@ export default function DatesList({ dates }: DatesListProps) {
 
         return (
           <li key={d.id} className="py-3">
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <span className="text-[var(--accent)] font-medium">{formattedDate}</span>
                 {d.time && (
@@ -30,9 +30,25 @@ export default function DatesList({ dates }: DatesListProps) {
                   </span>
                 )}
               </div>
-              <div className="text-right text-sm text-[var(--text-muted)]">
-                <span>{d.theater_name}</span>
-                {d.city && <span>, {d.city}</span>}
+              <div className="flex flex-col items-end gap-1.5 text-right text-sm text-[var(--text-muted)]">
+                <span>
+                  {d.theater_name}
+                  {d.city && `, ${d.city}`}
+                </span>
+                {d.tickets_url && (
+                  d.tickets_url === 'coming-soon'
+                    ? <span className="text-xs italic opacity-60">Biglietti disponibili a breve</span>
+                    : (
+                      <a
+                        href={d.tickets_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-sm border border-[var(--accent)] px-3 py-0.5 text-xs uppercase tracking-wider text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--bg)]"
+                      >
+                        Acquista biglietti →
+                      </a>
+                    )
+                )}
               </div>
             </div>
             {d.notes && (

@@ -44,6 +44,7 @@ export async function getPlayBySlug(slug: string) {
           city,
           gphotos_url,
           notes,
+          tickets_url,
           performance_people (
             character_name,
             role,

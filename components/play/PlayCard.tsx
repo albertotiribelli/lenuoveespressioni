@@ -45,27 +45,49 @@ export default function PlayCard({ upcomingDate, variant = 'near' }: PlayCardPro
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          {isFar && (
-            <span className="rounded-sm border border-[var(--border)] px-2 py-0.5 text-xs uppercase tracking-wider text-[var(--text-muted)]">
-              In programma
-            </span>
-          )}
-          {isPast && (
-            <span className="rounded-sm border border-[var(--border)] px-2 py-0.5 text-xs uppercase tracking-wider text-[var(--text-muted)]">
-              Conclusa
-            </span>
-          )}
-          <div className={`text-xs uppercase tracking-wider ${isPast || isFar ? 'text-[var(--text-muted)]' : 'text-[var(--accent)]'}`}>
-            <span>{formattedDate}</span>
-            {upcomingDate.time && <span> — {upcomingDate.time.slice(0, 5)}</span>}
-            {upcomingDate.theater_name && (
-              <span className="text-[var(--text-muted)]">
-                {' '}· {upcomingDate.theater_name}
-                {upcomingDate.city && `, ${upcomingDate.city}`}
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {isFar && (
+              <span className="rounded-sm border border-[var(--border)] px-2 py-0.5 text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                In programma
               </span>
             )}
+            {isPast && (
+              <span className="rounded-sm border border-[var(--border)] px-2 py-0.5 text-xs uppercase tracking-wider text-[var(--text-muted)]">
+                Conclusa
+              </span>
+            )}
+            <div className={`text-xs uppercase tracking-wider ${isPast || isFar ? 'text-[var(--text-muted)]' : 'text-[var(--accent)]'}`}>
+              <span>{formattedDate}</span>
+              {upcomingDate.time && <span> — {upcomingDate.time.slice(0, 5)}</span>}
+              {upcomingDate.theater_name && (
+                <span className="text-[var(--text-muted)]">
+                  {' '}· {upcomingDate.theater_name}
+                  {upcomingDate.city && `, ${upcomingDate.city}`}
+                </span>
+              )}
+            </div>
           </div>
+
+          {!isPast && upcomingDate.tickets_url && (
+            upcomingDate.tickets_url === 'coming-soon'
+              ? (
+                <span className="self-start text-xs italic text-[var(--text-muted)] opacity-60">
+                  Biglietti disponibili a breve
+                </span>
+              )
+              : (
+                <a
+                  href={upcomingDate.tickets_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="self-start rounded-sm border border-[var(--accent)] px-3 py-1 text-xs uppercase tracking-wider text-[var(--accent)] transition-colors hover:bg-[var(--accent)] hover:text-[var(--bg)]"
+                >
+                  Acquista biglietti →
+                </a>
+              )
+          )}
         </div>
       </div>
     </Link>

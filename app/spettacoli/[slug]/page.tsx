@@ -48,6 +48,7 @@ export default async function SpettacoloPage({ params, searchParams }: Props) {
       city: d.city,
       gphotos_url: d.gphotos_url,
       notes: d.notes,
+      tickets_url: d.tickets_url ?? null,
       created_at: null,
     })) ?? []
 

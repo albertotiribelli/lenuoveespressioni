@@ -15,6 +15,7 @@ const base: PerformanceDate = {
   city: 'Milano',
   gphotos_url: null,
   notes: null,
+  tickets_url: null,
   created_at: null,
 }
 
