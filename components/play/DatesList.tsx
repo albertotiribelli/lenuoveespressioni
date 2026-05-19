@@ -5,7 +5,7 @@ interface DatesListProps {
   dates: PerformanceDate[]
 }
 
-export default function DatesList({ dates }: DatesListProps) {
+export default function DatesList({ dates }: Readonly<DatesListProps>) {
   if (dates.length === 0) {
     return (
       <p className="text-sm text-[var(--text-muted)]">
