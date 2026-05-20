@@ -65,8 +65,29 @@ export default function ChiSiamoPage() {
           Questo spettacolo segna un punto di svolta nel percorso della
           compagnia. Con la regia di Stefania Belotti nasceranno infatti tanti altri
           spettacoli, tutti costruiti con una prima a La Campanella tra primavera ed estate
-          e una replica tra autunno e inverno dello stesso anno. È un&apos;impostazione che,
+          e negli anni successivi anche una replica tra autunno e inverno dello stesso anno. È un&apos;impostazione che,
           nei fatti, continua ancora oggi.
+        </p>
+
+        <p>
+          Tra il 2011 e il 2015 la compagnia porta in scena diversi spettacoli, esplorando
+          stili e repertori sempre nuovi. Con{' '}
+          <Link href="/spettacoli/mary_poppins" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Salviamo la Famiglia Banks&rdquo;</em>
+          </Link>, ispirato a Mary Poppins, si consolida un legame speciale con il pubblico:
+          la leggenda vuole che quella sera il teatro fosse così pieno da costringere qualcuno
+          a seguire lo spettacolo in piedi — cosa che, con le norme di sicurezza di oggi, non
+          potrebbe più accadere. Segue{' '}
+          <Link href="/spettacoli/forza_venite_gente" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Tasche Vuote, Cuore in Festa&rdquo;</em>
+          </Link>, in piena collaborazione con l&apos;oratorio e ispirato a{' '}
+          <em>Forza Venite Gente</em>, sulla vita di San Francesco. Poi arriva{' '}
+          <Link href="/spettacoli/sette_spose_per_sette_fratelli" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Una Valanga di Matrimoni&rdquo;</em>
+          </Link> — ispirato a <em>Sette Spose per Sette Fratelli</em>, ma con una compagnia
+          cresciuta: nove spose per nove fratelli. Sono anni che temprano lo spirito della
+          compagnia, quello che la distingue da tutte le altre: la voglia e il piacere di
+          stare insieme (in particolare la notte prima degli spettacoli).
         </p>
 
         <p>
