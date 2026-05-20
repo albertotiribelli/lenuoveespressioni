@@ -4,10 +4,10 @@ import { COMPANY } from '@/lib/company'
 
 export const metadata: Metadata = {
   title: 'Chi Siamo',
-  description: 'La storia della compagnia teatrale Le Nuove Espressioni, fondata nel 2006 a Bovisio Masciago. Vent\'anni di teatro, spettacoli e collaborazioni.',
+  description: 'La storia della compagnia teatrale Le Nuove Espressioni, nata nel 2007 a Bovisio Masciago. Quasi vent\'anni di teatro, spettacoli e collaborazioni.',
   openGraph: {
     title: 'Chi Siamo — Le Nuove Espressioni',
-    description: 'La storia della compagnia teatrale Le Nuove Espressioni, fondata nel 2006 a Bovisio Masciago.',
+    description: 'La storia della compagnia teatrale Le Nuove Espressioni, nata nel 2007 a Bovisio Masciago.',
     type: 'website',
   },
 }
@@ -23,49 +23,204 @@ export default function ChiSiamoPage() {
         <h2 className="font-serif text-2xl text-[var(--text)]">La nostra storia</h2>
 
         <p>
-          Il primo spettacolo messo in scena dagli attori della compagnia,{' '}
-          <em>"Su di Noi Nemmeno una Nuvola"</em>, risale al 2006. In occasione
-          dell&apos;ordinazione sacerdotale di Don Antonio Pogliani, con Sonia Turella
-          nelle vesti di regista è stato realizzato un adattamento di{' '}
-          <em>"Aggiungi un Posto a Tavola"</em>. Dopo la prima e la replica in Campanella,
-          lo spettacolo è stato portato in scena in altri 5 teatri della zona
-          (Lentate sul Seveso, Varedo, Monza, Cologno Monzese e Carate Brianza),
-          ricevendo un ottimo riscontro da parte del pubblico.
+          La compagnia muove i primi passi nel 2007 con un nome derivato da alcuni scherzi e
+          citazioni che emergono naturalmente durante le prove: <em>&ldquo;…ed espressioni simili&rdquo;</em>
         </p>
 
         <p>
-          Gettate le basi per questa esperienza oramai decennale, il gruppo si è allargato
-          notevolmente e ha intrapreso la preparazione di un nuovo spettacolo, sempre
-          all&apos;interno dell&apos;oratorio di Bovisio Masciago. La regia de{' '}
-          <em>"I Soliti Idioti"</em> è stata curata da Massimo Clerici. Con il nuovo
-          spettacolo, <em>"Herkules"</em>, andato in scena nel 2011, si sono poste le basi
-          per l&apos;attuale formazione della compagnia: è infatti da questo spettacolo che
-          Stefania Belotti è l&apos;educatrice di riferimento del gruppo. Con l&apos;aiuto
-          alla regia di Ivana Stranci, dopo la consueta prima al teatro "La Campanella",
-          lo spettacolo è stato replicato anche a Birago e a Milano, in un teatro all&apos;aperto.
+          Il primo spettacolo messo in scena dalla compagnia risale al 2008:{' '}
+          <Link href="/spettacoli/aggiungi_un_posto_a_tavola" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Su di Noi Nemmeno una Nuvola&rdquo;</em>
+          </Link>. In occasione
+          dell&apos;ordinazione sacerdotale di Don Antonio Pogliani, con la regia di Sonia
+          Turella, viene realizzato un adattamento di <em>&ldquo;Aggiungi un Posto a Tavola&rdquo;</em>.
+          Dopo la prima e la replica a La Campanella, lo spettacolo viene portato anche in
+          altri cinque teatri della zona — Lentate sul Seveso, Varedo, Monza, Cologno
+          Monzese e Carate Brianza — ottenendo un ottimo riscontro da parte del pubblico.
         </p>
 
         <p>
-          Durante la gestione di Stefania Belotti sono stati realizzati altri 14 spettacoli
-          principali, con la prima al "La Campanella" a cavallo di ogni primavera ed estate,
-          e la replica, solitamente nello stesso teatro, tra autunno e inverno dello stesso anno.
+          Su queste basi il gruppo cresce, si allarga e continua il proprio percorso
+          all&apos;interno dell&apos;oratorio di Bovisio Masciago, avviando la preparazione
+          di un nuovo spettacolo.
         </p>
 
         <p>
-          Nel 2015, in contemporanea con la realizzazione di <em>"E...State Insieme"</em>,
-          la compagnia e i suoi membri storici hanno deciso di espandere i propri orizzonti,
-          ufficializzando la creazione dell&apos;associazione <strong className="text-[var(--text)]">Le Nuove Espressioni</strong>{' '}
-          per portare avanti a tutto tondo l&apos;attività oramai decennale. Con la creazione
-          dell&apos;associazione sono state avviate diverse collaborazioni: con{' '}
-          <em>"Gli Amici della Mergasciada"</em>, per cui la compagnia ha portato in scena
-          diversi spettacoli in occasione della festa del paese; con l&apos;associazione{' '}
-          <em>"Baule Verde"</em>, che promuove le visite a Villa Zari a Bovisio. Un&apos;importante
-          collaborazione è quella con la <strong className="text-[var(--text)]">Fondazione Oratori Milanesi — FOM</strong>:
-          dal 2016 una delegazione de "Le Nuove Espressioni" mette in scena spezzoni del vangelo
-          davanti al pubblico di migliaia di ragazzi e del vescovo, in occasione
-          dell&apos;incontro diocesano con i quindicenni al Sacro Monte di Varese. Nel 2015
-          è stata inoltre realizzata una piccola scena su San Francesco per la{' '}
-          <em>"Notte dei Santi"</em> in piazza Duomo a Milano.
+          Nasce così{' '}
+          <Link href="/spettacoli/soliti_idioti" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;I Soliti Idioti&rdquo;</em>
+          </Link>, con la regia di Massimo Clerici.
+        </p>
+
+        <p>
+          Nel 2011 arriva un nuovo passaggio importante: Stefania Belotti assume la regia
+          come educatrice di riferimento del gruppo, affiancata da Ivana Stranci come aiuto
+          regia. Nasce così{' '}
+          <Link href="/spettacoli/from_zero_to_hero" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Herkules&rdquo;</em>
+          </Link>, spettacolo che verrà replicato anche a Birago e a Milano, in un teatro all&apos;aperto.
+        </p>
+
+        <p>
+          Questo spettacolo segna un punto di svolta nel percorso della
+          compagnia. Con la regia di Stefania Belotti nasceranno infatti tanti altri
+          spettacoli, tutti costruiti con una prima a La Campanella tra primavera ed estate
+          e una replica tra autunno e inverno dello stesso anno. È un&apos;impostazione che,
+          nei fatti, continua ancora oggi.
+        </p>
+
+        <p>
+          Un altro passaggio decisivo arriva nel 2015. In quello stesso anno, mentre prende
+          forma{' '}
+          <Link href="/spettacoli/grease" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;E...State Insieme&rdquo;</em>
+          </Link>, rivisitazione del classico{' '}
+          <em>Grease</em>, la compagnia e i suoi membri storici scelgono di dare al progetto
+          una struttura più definita, ufficializzando la nascita dell&apos;associazione{' '}
+          <strong className="text-[var(--text)]">Le Nuove Espressioni</strong>. Fino a quel
+          momento il gruppo si presentava come compagnia teatrale <em>&ldquo;... ed
+          espressioni simili&rdquo;</em>; da lì in avanti prende avvio un percorso più ampio
+          e indipendente.
+        </p>
+
+        <p>
+          Con la nascita dell&apos;associazione si aprono anche diverse collaborazioni. Tra
+          queste c&apos;è quella con <em>&ldquo;Gli Amici della Mergasciada&rdquo;</em>, per
+          cui la compagnia realizza spettacoli, quiz, quadri viventi e altre iniziative in
+          occasione della festa del paese.
+        </p>
+
+        <p>
+          Si sviluppa anche la collaborazione con l&apos;associazione{' '}
+          <em>&ldquo;Baule Verde&rdquo;</em>, impegnata nella promozione delle visite a
+          Villa Zari di Bovisio Masciago.
+        </p>
+
+        <p>
+          Tra le collaborazioni più significative c&apos;è anche quella con la{' '}
+          <strong className="text-[var(--text)]">Fondazione Oratori Milanesi — FOM</strong>.
+          Già nel 2015 viene realizzata una breve scena su San Francesco per la{' '}
+          <em>&ldquo;Notte dei Santi&rdquo;</em> in piazza Duomo a Milano. Dal 2016, invece,
+          una delegazione de Le Nuove Espressioni mette in scena spezzoni del Vangelo davanti
+          a migliaia di ragazzi e al vescovo, durante l&apos;incontro diocesano con i
+          quindicenni al Sacro Monte di Varese.
+        </p>
+
+        <p>
+          Parallelamente, la compagnia inizia a porsi obiettivi sempre più ambiziosi. Nel
+          2016, con{' '}
+          <Link href="/spettacoli/la_bella_e_la_bestia" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Tra realtà e Magia&rdquo;</em>
+          </Link>, propria versione de{' '}
+          <em>&ldquo;La Bella e la Bestia&rdquo;</em>, i costumi vengono realizzati a mano
+          dai membri del gruppo, ispirandosi allo stile del celebre film d&apos;animazione.
+          Nel 2017 arrivano invece per la prima volta canzoni in inglese, con uno spettacolo
+          più volte replicato, ispirato al musical <em>Mamma Mia!</em> e intitolato{' '}
+          <Link href="/spettacoli/mamma_mia!" className="text-[var(--accent)] hover:underline">
+            <em>Say I Do</em>
+          </Link>. Lo spettacolo verrà poi replicato nel gennaio 2023 in memoria
+          di Stefano Ronchi.
+        </p>
+
+        <p>
+          Nel 2018, con{' '}
+          <Link href="/spettacoli/flashdance" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;I Wanna Dance&rdquo;</em>
+          </Link>, la compagnia — i cui membri
+          iniziano ormai a essere anagraficamente adulti — affronta uno spettacolo più
+          impegnativo sul piano dell&apos;interpretazione e del ballo.
+        </p>
+
+        <p>
+          Questo percorso prepara l&apos;annata 2019/2020 e porta in scena{' '}
+          <Link href="/spettacoli/romeo_e_giulietta" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Un Amore Senza Tempo&rdquo;</em>
+          </Link>, liberamente ispirato allo
+          shakespeariano <em>&ldquo;Romeo e Giulietta&rdquo;</em>. Molto apprezzato dal
+          pubblico, lo spettacolo consolida anche la fama delle cantanti della compagnia e
+          viene replicato nella cornice del Circolo Alessandro Volta di Milano.
+        </p>
+
+        <p>
+          Il 2020 e il 2021 sono anni segnati da difficoltà globale che mettono in crisi
+          anche il fare teatro. La compagnia, però, non si ferma: durante il periodo di
+          quarantena continua a ballare e a provare a distanza, filmandosi e lavorando per
+          via telematica. Un modo concreto per dimostrare che nulla può fermare la passione
+          per il palcoscenico e l&apos;affetto per il proprio pubblico.
+        </p>
+
+        <p>
+          Nel 2022, dopo molti mesi lontani dal sipario del Teatro La Campanella, va in scena{' '}
+          <Link href="/spettacoli/footloose" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Don&apos;t Dance&rdquo;</em>
+          </Link>, spettacolo che racconta la voglia di
+          ballare e cantare nonostante le difficoltà esterne. Un titolo e un messaggio
+          perfettamente in linea con il momento vissuto.
+        </p>
+
+        <p>
+          Segue poi{' '}
+          <Link href="/spettacoli/sister_act" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Sorella alla Riscossa&rdquo;</em>
+          </Link>, che non è solo un altro
+          successo — in una storia fatta quasi sempre di spettacoli sold out grazie a un
+          pubblico affezionato — ma anche una conferma della maturità artistica raggiunta
+          dalla compagnia. Replicato tre volte, di cui la terza con il patrocinio
+          dell&apos;associazione <em>&ldquo;Maria Letizia Verga&rdquo;</em>, è uno
+          spettacolo corale che unisce qualità canore, energia comica e capacità di stare
+          in scena come gruppo, restituendo al pubblico tutta la forza della compagnia.
+        </p>
+
+        <p>
+          L&apos;anno seguente la compagnia porta in scena una propria versione de{' '}
+          <Link href="/spettacoli/la_famiglia_addams" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;La Famiglia Addams&rdquo;</em>
+          </Link>. Anche le canzoni vengono riadattate,
+          con sessioni di registrazione e arrangiamento musicale svolte in uno studio messo
+          a disposizione da un genitore del gruppo, fatto poi diventare membro{' '}
+          <em>ad honorem</em>.
+        </p>
+
+        <p>
+          Gli anniversari contano, e per celebrare il 15° anno del gruppo si sceglie di
+          riportare in scena{' '}
+          <Link href="/spettacoli/from_zero_to_hero_2" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Herkules&rdquo;</em>
+          </Link> in una versione più matura:
+          canzoni riadattate, nuovi inserimenti musicali e scenografie di grande impatto
+          disegnate da un attore che, nel frattempo, ha trasformato la propria passione in
+          un percorso professionale legato alla scenografia e alle arti visive.
+        </p>
+
+        <p>
+          La compagnia, oggi associazione, è guidata da un consiglio formato in gran parte
+          da membri storici, che negli anni ha continuato a interrogarsi sulla direzione da
+          prendere. Nel 2026 arriva un&apos;altra svolta importante: forte della crescita
+          maturata nel canto, nel lavoro in studio di registrazione, nelle scenografie e nel
+          rapporto con un pubblico ormai ben oltre i confini del paese, la compagnia sceglie
+          di affrontare quello che, almeno per ora, è lo spettacolo più complesso del suo
+          percorso,{' '}
+          <Link href="/spettacoli/greatest_showman" className="text-[var(--accent)] hover:underline">
+            <em>&ldquo;Freaks&apos; Heart – Impossible Come True&rdquo;</em>
+          </Link>. Un
+          nuovo passo avanti, ispirato alla storia di P.T. Barnum, che lascia intuire quanto
+          il cammino sia ancora aperto.
+        </p>
+
+        <p>
+          E allora si torna all&apos;inizio: a un gruppo di adolescenti che, con il tempo,
+          ha scelto di diventare associazione. Un gruppo di amici che, forte dei legami nati
+          negli anni della giovinezza, è rimasto unito continuando a portare avanti una
+          passione comune.
+        </p>
+
+        <p>
+          In quasi vent&apos;anni di storia sono passati tanti attori, ma molti degli ex
+          membri fanno ancora fatica a lasciare il gruppo WhatsApp e spesso, la sera della
+          prima, sono dietro le quinte a gridare un &ldquo;merda&rdquo; a tutti, come segno
+          di buon auspicio. È anche per questo che Le Nuove Espressioni non sono solo una
+          compagnia teatrale o un&apos;associazione culturale, ma un gruppo di sorelle e
+          fratelli uniti da una stessa passione.
         </p>
       </section>
 
