@@ -5,10 +5,12 @@ import PlayGrid from '@/components/play/PlayGrid'
 export const metadata: Metadata = {
   title: 'Spettacoli',
   description: 'Il repertorio della compagnia teatrale Le Nuove Espressioni: tutti gli spettacoli dal 2006 a oggi.',
+  alternates: { canonical: '/spettacoli' },
   openGraph: {
     title: 'Spettacoli — Le Nuove Espressioni',
     description: 'Il repertorio della compagnia teatrale Le Nuove Espressioni: tutti gli spettacoli dal 2006 a oggi.',
     type: 'website',
+    images: [{ url: '/logo.png' }],
   },
 }
 

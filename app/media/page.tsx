@@ -6,10 +6,12 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: 'Media',
   description: 'Trailer e video degli spettacoli della compagnia teatrale Le Nuove Espressioni.',
+  alternates: { canonical: '/media' },
   openGraph: {
     title: 'Media — Le Nuove Espressioni',
     description: 'Trailer e video degli spettacoli della compagnia teatrale Le Nuove Espressioni.',
     type: 'website',
+    images: [{ url: '/logo.png' }],
   },
 }
 

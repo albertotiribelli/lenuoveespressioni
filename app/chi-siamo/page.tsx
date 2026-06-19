@@ -5,10 +5,12 @@ import { COMPANY } from '@/lib/company'
 export const metadata: Metadata = {
   title: 'Chi Siamo',
   description: 'La storia della compagnia teatrale Le Nuove Espressioni, nata nel 2007 a Bovisio Masciago. Quasi vent\'anni di teatro, spettacoli e collaborazioni.',
+  alternates: { canonical: '/chi-siamo' },
   openGraph: {
     title: 'Chi Siamo — Le Nuove Espressioni',
     description: 'La storia della compagnia teatrale Le Nuove Espressioni, nata nel 2007 a Bovisio Masciago.',
     type: 'website',
+    images: [{ url: '/logo.png' }],
   },
 }
 

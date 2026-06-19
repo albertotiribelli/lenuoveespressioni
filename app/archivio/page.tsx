@@ -5,10 +5,12 @@ import ArchiveTimeline from '@/components/ui/ArchiveTimeline'
 export const metadata: Metadata = {
   title: 'Archivio',
   description: 'Lo storico delle produzioni di Le Nuove Espressioni dal 2006 a oggi: date, teatri e location.',
+  alternates: { canonical: '/archivio' },
   openGraph: {
     title: 'Archivio — Le Nuove Espressioni',
     description: 'Lo storico delle produzioni di Le Nuove Espressioni dal 2006 a oggi: date, teatri e location.',
     type: 'website',
+    images: [{ url: '/logo.png' }],
   },
 }
 

@@ -1,8 +1,16 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import UpcomingDatesSection from '@/components/ui/UpcomingDatesSection'
 import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
 import { getPlays } from '@/lib/getPlays'
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+  openGraph: {
+    images: [{ url: '/logo.png' }],
+  },
+}
 
 export default async function HomePage() {
   const plays = await getPlays()

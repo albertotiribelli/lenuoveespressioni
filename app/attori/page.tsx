@@ -6,10 +6,12 @@ import MembershipTimeline from '@/components/person/MembershipTimeline'
 export const metadata: Metadata = {
   title: 'Compagnia',
   description: 'I membri della compagnia teatrale Le Nuove Espressioni: attori, registi e tecnici.',
+  alternates: { canonical: '/attori' },
   openGraph: {
     title: 'Compagnia — Le Nuove Espressioni',
     description: 'I membri della compagnia teatrale Le Nuove Espressioni: attori, registi e tecnici.',
     type: 'website',
+    images: [{ url: '/logo.png' }],
   },
 }
 
