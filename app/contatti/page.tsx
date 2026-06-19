@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { COMPANY } from '@/lib/company'
 
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title: 'Contatti',
   description: 'Contatta la compagnia teatrale Le Nuove Espressioni per collaborazioni, ospitalità e informazioni sugli spettacoli.',

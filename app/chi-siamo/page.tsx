@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { COMPANY } from '@/lib/company'
 
+export const revalidate = 86400
+
 export const metadata: Metadata = {
   title: 'Chi Siamo',
   description: 'La storia della compagnia teatrale Le Nuove Espressioni, nata nel 2007 a Bovisio Masciago. Quasi vent\'anni di teatro, spettacoli e collaborazioni.',

@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { getPlays } from '@/lib/getPlays'
 import PlayGrid from '@/components/play/PlayGrid'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Spettacoli',
   description: 'Il repertorio della compagnia teatrale Le Nuove Espressioni: tutti gli spettacoli dal 2006 a oggi.',

@@ -1,7 +1,14 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { getPersonBySlug, getPersonMeta } from '@/lib/getPeople'
+import { getPersonBySlug, getPersonMeta, getPersonSlugs } from '@/lib/getPeople'
 import AttoreLayout from '@/components/person/AttoreLayout'
+
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const slugs = await getPersonSlugs().catch(() => [])
+  return (slugs ?? []).map((p) => ({ slug: p.slug }))
+}
 
 const ROLE_LABELS: Record<string, string> = {
   actor: 'Attore',

@@ -1,13 +1,19 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import type { Metadata } from 'next'
-import { getPlayBySlug, getPlayMeta } from '@/lib/getPlays'
+import { getPlayBySlug, getPlayMeta, getPlaySlugs } from '@/lib/getPlays'
 import SpettacoloBody from '@/components/play/SpettacoloBody'
 import type { PerformanceDate } from '@/types'
 
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const slugs = await getPlaySlugs().catch(() => [])
+  return (slugs ?? []).map((p) => ({ slug: p.slug }))
+}
+
 interface Props {
   readonly params: Promise<{ slug: string }>
-  readonly searchParams: Promise<{ year?: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -31,9 +37,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function SpettacoloPage({ params, searchParams }: Props) {
+export default async function SpettacoloPage({ params }: Props) {
   const { slug } = await params
-  const { year } = await searchParams
   const play = await getPlayBySlug(slug).catch(() => null)
   if (!play) notFound()
 
@@ -149,7 +154,6 @@ export default async function SpettacoloPage({ params, searchParams }: Props) {
         productions={productions}
         castsPerProduction={castsPerProduction}
         upcomingDates={upcomingDates}
-        initialYear={year}
       />
     </article>
   )

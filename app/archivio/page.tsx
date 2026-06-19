@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { getAllProductions } from '@/lib/getProductions'
 import ArchiveTimeline from '@/components/ui/ArchiveTimeline'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Archivio',
   description: 'Lo storico delle produzioni di Le Nuove Espressioni dal 2006 a oggi: date, teatri e location.',

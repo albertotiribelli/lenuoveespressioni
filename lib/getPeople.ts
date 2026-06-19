@@ -1,5 +1,11 @@
 import { supabase } from './supabase'
 
+export async function getPersonSlugs() {
+  const { data, error } = await supabase.from('people').select('slug')
+  if (error) throw error
+  return data
+}
+
 export async function getPersonMeta(slug: string) {
   const { data, error } = await supabase
     .from('people')

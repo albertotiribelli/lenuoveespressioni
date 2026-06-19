@@ -5,6 +5,8 @@ import UpcomingDatesSection from '@/components/ui/UpcomingDatesSection'
 import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
 import { getPlays } from '@/lib/getPlays'
 
+export const revalidate = 300
+
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: {

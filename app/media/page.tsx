@@ -3,6 +3,8 @@ import { getPlays } from '@/lib/getPlays'
 import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
 import Link from 'next/link'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Media',
   description: 'Trailer e video degli spettacoli della compagnia teatrale Le Nuove Espressioni.',

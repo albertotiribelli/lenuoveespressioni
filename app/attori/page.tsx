@@ -1,7 +1,11 @@
 import type { Metadata } from 'next'
+import { unstable_cache } from 'next/cache'
 import { getPeople, getPeopleTimeline } from '@/lib/getPeople'
 import PeopleGrid from '@/components/person/PeopleGrid'
 import MembershipTimeline from '@/components/person/MembershipTimeline'
+
+const getCachedPeople = unstable_cache(() => getPeople(), ['people-list'], { revalidate: 3600 })
+const getCachedPeopleTimeline = unstable_cache(() => getPeopleTimeline(), ['people-timeline'], { revalidate: 3600 })
 
 export const metadata: Metadata = {
   title: 'Compagnia',
@@ -28,7 +32,7 @@ export default async function AttoriPage({ searchParams }: Props) {
   const params = await searchParams
 
   if ('edespressionisimili' in params) {
-    const raw = await getPeopleTimeline()
+    const raw = await getCachedPeopleTimeline()
 
     type Entry = {
       id: string
@@ -70,7 +74,7 @@ export default async function AttoriPage({ searchParams }: Props) {
     )
   }
 
-  const people = await getPeople()
+  const people = await getCachedPeople()
   const sorted = [...(people ?? [])].sort((a, b) =>
     lastName(a.name).localeCompare(lastName(b.name), 'it')
   )

@@ -11,6 +11,13 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 - Canonical URL tag and `og:image` meta tag on every page
 - Home page metadata export (was inheriting root layout defaults only)
+- `getPlaySlugs` and `getPersonSlugs` lightweight queries for `generateStaticParams`
+
+### Changed
+- `/spettacoli/[slug]`: drops `searchParams` prop, enabling ISR; `?year=` tab is now initialised client-side via `useEffect` after hydration
+- `/spettacoli/[slug]` and `/attori/[slug]`: `generateStaticParams` pre-renders all pages at deploy time; `revalidate = 3600` keeps them fresh
+- All static pages (`/`, `/spettacoli`, `/archivio`, `/media`, `/chi-siamo`, `/contatti`): `revalidate` added (300 s on home, 3600 s on content pages, 86400 s on near-static pages) — pages now served from CDN edge after first request
+- `/attori` queries (`getPeople`, `getPeopleTimeline`) wrapped with `unstable_cache(3600)` — DB round-trip skipped on cached hits even though the page remains dynamic
 
 ---
 

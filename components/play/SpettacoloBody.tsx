@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import CreditsSection from './CreditsSection'
 import ProductionHistory from './ProductionHistory'
 import DatesList from './DatesList'
@@ -37,7 +37,6 @@ interface SpettacoloBodyProps {
   readonly productions: readonly ProductionForHistory[]
   readonly castsPerProduction: readonly { season_year: string; cast: readonly CreditEntry[] }[]
   readonly upcomingDates: readonly PerformanceDate[]
-  readonly initialYear?: string
 }
 
 export default function SpettacoloBody({
@@ -48,12 +47,15 @@ export default function SpettacoloBody({
   productions,
   castsPerProduction,
   upcomingDates,
-  initialYear,
 }: SpettacoloBodyProps) {
-  const defaultYear = castsPerProduction.find((p) => p.season_year === initialYear)?.season_year
-    ?? castsPerProduction[0]?.season_year
-    ?? ''
-  const [clickedYear, setClickedYear] = useState(defaultYear)
+  const [clickedYear, setClickedYear] = useState(castsPerProduction[0]?.season_year ?? '')
+
+  useEffect(() => {
+    const year = new URLSearchParams(globalThis.location.search).get('year')
+    if (year && castsPerProduction.some((p) => p.season_year === year)) {
+      setClickedYear(year)
+    }
+  }, [castsPerProduction])
   const [hoveredYear, setHoveredYear] = useState<string | null>(null)
 
   const activeYear = hoveredYear ?? clickedYear
