@@ -35,7 +35,7 @@ describe('CompanyTimeline', () => {
   it('renders play titles linked to /spettacoli/[slug]', () => {
     render(<CompanyTimeline history={history} />)
     const amletoLink = screen.getByText('Amleto').closest('a')
-    expect(amletoLink).toHaveAttribute('href', '/spettacoli/amleto')
+    expect(amletoLink).toHaveAttribute('href', '/spettacoli/amleto?year=2024')
   })
 
   it('renders character names', () => {
