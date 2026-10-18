@@ -4,8 +4,8 @@ import { getPeople, getPeopleTimeline } from '@/lib/getPeople'
 import PeopleGrid from '@/components/person/PeopleGrid'
 import MembershipTimeline from '@/components/person/MembershipTimeline'
 
-const getCachedPeople = unstable_cache(() => getPeople(), ['people-list'], { revalidate: 3600 })
-const getCachedPeopleTimeline = unstable_cache(() => getPeopleTimeline(), ['people-timeline'], { revalidate: 3600 })
+const getCachedPeople = unstable_cache(() => getPeople(), ['people-list'], { revalidate: 3600, tags: ['people'] })
+const getCachedPeopleTimeline = unstable_cache(() => getPeopleTimeline(), ['people-timeline'], { revalidate: 3600, tags: ['people', 'dates'] })
 
 export const metadata: Metadata = {
   title: 'Compagnia',

@@ -9,6 +9,9 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Admin console** (`/admin`, issue #14, increment 1): magic-link login (Supabase Auth, restricted to `ADMIN_EMAILS` and the `admins` table), mobile-first forms to edit existing `people` and `dates` rows; saves revalidate the public pages on demand, so no redeploy is needed. `/admin` is `noindex`, disallowed in `robots.txt` and gated by `proxy.ts`
+- `supabase/migrations/20261018000000_admin_console.sql`: `admins` table, `is_admin()` and RLS `UPDATE` policies for `people` and `dates`
+- Tests for the admin guard, validation, server actions and forms
 - Canonical URL tag and `og:image` meta tag on every page
 - Home page metadata export (was inheriting root layout defaults only)
 - `getPlaySlugs` and `getPersonSlugs` lightweight queries for `generateStaticParams`
@@ -17,6 +20,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `/spettacoli/[slug]`: drops `searchParams` prop, enabling ISR; `?year=` tab is now initialised client-side via `useEffect` after hydration
 - `/spettacoli/[slug]` and `/attori/[slug]`: `generateStaticParams` pre-renders all pages at deploy time; `revalidate = 3600` keeps them fresh
 - All static pages (`/`, `/spettacoli`, `/archivio`, `/media`, `/chi-siamo`, `/contatti`): `revalidate` added (300 s on home, 3600 s on content pages, 86400 s on near-static pages) — pages now served from CDN edge after first request
+- `/attori` cached queries now carry cache tags (`people`, `dates`) so admin saves can invalidate them
 - `/attori` queries (`getPeople`, `getPeopleTimeline`) wrapped with `unstable_cache(3600)` — DB round-trip skipped on cached hits even though the page remains dynamic
 
 ---

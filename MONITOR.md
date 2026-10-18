@@ -21,6 +21,7 @@ Live in production. Core feature set complete:
 - Company member grid with role filter and active/alumni sections
 - Hidden membership timeline easter egg (`?edespressionisimili`)
 - Three-tier date strategy (near future / far future / recent past)
+- Admin console at `/admin` (magic-link login, edit existing `people` and `dates`; issue #14 — more tables and create/delete are planned, see `docs/plans/admin-console.md`)
 - ISR caching on all static routes; `unstable_cache` on dynamic ones
 - Full SEO: per-page metadata, Open Graph, sitemap, robots.txt, canonical URLs
 
@@ -51,7 +52,6 @@ Live in production. Core feature set complete:
 
 ## Out of scope (don't suggest these)
 
-- CMS or admin panel for content editing (Supabase dashboard is sufficient)
-- User authentication or member login area
+- Public user authentication or a member login area (the admin login is for maintainers only)
 - Booking or ticketing system (links to the theater's own system)
 - Newsletter or email delivery infrastructure
