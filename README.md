@@ -74,6 +74,7 @@ npm test         # Jest unit tests
 | `NEXT_PUBLIC_SUPABASE_URL` | ✅ | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | ✅ | Supabase anon/public key |
 | `NEXT_PUBLIC_SITE_URL` | ✅ | Canonical base URL (e.g. `https://lenuoveespressioni.it`) — used for sitemap and Open Graph |
+| `ADMIN_EMAILS` | ✅ for `/admin` | Comma-separated emails allowed to log in to the admin console |
 
 ---
 
@@ -93,6 +94,22 @@ The `dates.tickets_url` column controls ticket links: `null` hides the button, `
 
 ---
 
+## Admin console
+
+`/admin` lets the maintainers edit existing `people` and `dates` rows (including from a phone) instead of using the Supabase dashboard. It is `noindex` and not in the sitemap.
+
+Setup:
+1. In Supabase, enable the Email provider (magic link) and add `<site url>/auth/callback` to the allowed redirect URLs.
+2. Edit the placeholder emails in `supabase/migrations/20261018000000_admin_console.sql`, then run it in the Supabase SQL editor (or with the CLI).
+3. Set `ADMIN_EMAILS` locally and in Vercel (same emails as the `admins` table).
+4. Open `/admin` and request a login link.
+
+To add an admin: insert a row in `public.admins` **and** add the email to `ADMIN_EMAILS`. Writes are authorized by RLS (`is_admin()`), and server actions re-check the session; the service-role key is never used.
+
+Saving an edit revalidates the affected public pages on demand (`updateTag` / `revalidatePath`), so no redeploy is needed.
+
+---
+
 ## Project Structure
 
 ```
@@ -102,7 +119,12 @@ components/
   play/               # PlayCard, SpettacoloBody, DatesList, …
   person/             # PersonCard, PeopleGrid, MembershipTimeline, …
   ui/                 # UpcomingDatesSection, ArchiveTimeline, …
+  admin/              # Admin forms and fields
 lib/                  # Data-fetching helpers (getPlays, getPeople, …)
+  admin/              # requireAdmin guard, form validation
+  supabase/           # Cookie-based Supabase clients for the admin session
+supabase/migrations/  # SQL to apply manually in Supabase
+proxy.ts              # Gates /admin/* (Next 16 successor of middleware)
 types/                # Shared TypeScript interfaces
 __tests__/            # Jest unit tests
 public/               # Static assets (logo, favicons)
