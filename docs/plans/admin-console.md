@@ -2,6 +2,20 @@
 
 Issue: #14 "[Features] - Admin console" (opened 2026-10-17).
 
+## Status (2026-10-18)
+
+| Increment | State |
+|---|---|
+| 1. Edit `people` and `dates` | Code done, PR #15 open (`feat/admin-console-14`). Migration applied in Supabase. Waiting on the Supabase redirect URL and the manual checks in 1.7. |
+| 2. Remaining tables | Not started |
+| 3. Create and delete | Not started |
+
+Open items before PR #15 can merge:
+- Add `<site url>/auth/callback` (production) and `http://localhost:3000/auth/callback` to Supabase Auth redirect URLs. The dashboard failed with "Failed to fetch (api.supabase.com)", so retry from another browser or network. Without it, the magic link lands on the Site URL and login fails.
+- Set `ADMIN_EMAILS` in Vercel.
+- Run the manual checks in 1.7.
+- Check whether the public read policy on `people` exposes `personal_data`.
+
 > As an admin user I want to be able to update infos on actors and shows, so that I don't have to deal in modifying directly the db. And I want to do that also on mobile.
 
 ## Decisions (agreed in the planning discussion)
@@ -90,7 +104,7 @@ Public pages use time-based refresh (`revalidate` between 300 and 86400 seconds,
 - [x] `CHANGELOG.md` entry.
 
 ### 1.7 Manual verification (maintainer, on a phone and on desktop)
-- [ ] Magic-link login works, and a non-allowlisted email cannot get in.
+- [ ] (blocked on the redirect URL) Magic-link login works, and a non-allowlisted email cannot get in.
 - [ ] Editing a person's `bio` changes `/attori/[slug]` without a redeploy.
 - [ ] Editing a date's `tickets_url` changes the public play page and home page.
 - [ ] `/admin` is not in `/sitemap.xml` and is disallowed in `/robots.txt`.
@@ -98,8 +112,19 @@ Public pages use time-based refresh (`revalidate` between 300 and 86400 seconds,
 
 ---
 
+## Lessons from increment 1 (apply to the next increments)
+
+- **Sentinel values:** `dates.tickets_url` accepts `coming-soon` besides URLs. Check each column for special values before validating it as a URL. `plays.poster_url`, `trailer_url` and `youtube_url` are candidates to check.
+- **React version in tests:** the installed React is 18.3 (Next 16 bundles its own React 19 when building), so `useActionState` does not exist under Jest. Form tests stub it, as in `__tests__/admin/forms.test.tsx`.
+- **Next 16 APIs:** `proxy.ts` replaces `middleware.ts`, `revalidateTag` needs a second argument, and `updateTag` gives immediate expiry inside server actions.
+- **Pre-existing failures, not caused by this work:** `next build` fails on `/` (an `onClick` passed from a server component, probably `components/play/PlayCard.tsx:84`) and `npm run lint` is broken (`next lint` was removed in Next 16). Fix the build before or at the start of increment 2, so it can be checked in CI.
+- **GitHub account:** `gh` must be logged in as `albertotiribelli` (the repo owner) to open PRs.
+- **Commit scope:** `admin` is not in the scopes list in `CONTRIBUTING.md`. Add it.
+
 ## Increment 2: remaining tables (PR 2)
 
+- [ ] Fix the pre-existing `next build` failure first (see lessons above).
+- [ ] Add the `admin` scope to `CONTRIBUTING.md`.
 - [ ] Edit `plays` (`title`, `description`, `short_desc`, `poster_url`, `trailer_url`, `youtube_url`), with `slug` still locked.
 - [ ] Edit `productions` (`season_year`, `notes`).
 - [ ] Edit `performance_people` (cast and credits: `role`, `character_name`, `costume_url`, `notes`, `sort_order`).
@@ -123,7 +148,8 @@ Public pages use time-based refresh (`revalidate` between 300 and 86400 seconds,
 ## Risks and open items
 
 - **Magic-link email limits:** the default Supabase sender is rate-limited. Fine for two people, and the fallback is email and password.
-- **Next 16 middleware naming and API changes:** verify against the Next 16 docs before writing it.
-- **`@supabase/ssr` with React 18.3 / Next 16:** check version compatibility when installing.
+- **Next 16 middleware naming and API changes:** resolved. It is `proxy.ts`.
+- **`@supabase/ssr` with React 18.3 / Next 16:** installed (0.12.7) and typechecks. The authenticated flow is not tested yet.
 - **`personal_data` exposure:** see the schema notes above.
-- **Migration is manual:** RLS is the real security boundary, so the policies need to be applied and tested before the admin UI is deployed to production.
+- **Migration is manual:** applied in Supabase on 2026-10-18. RLS is the real security boundary, so test that an unauthenticated write is rejected before deploying the admin UI to production.
+- **Supabase dashboard unreachable:** the redirect URL could not be saved from the dashboard. The Management API (`PATCH /v1/projects/{ref}/config/auth`, field `uri_allow_list`) is the fallback, and it replaces the whole list.
