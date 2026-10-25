@@ -144,12 +144,12 @@ Design notes:
 - **`plays.slug` and `productions.season_year`:** `season_year` is user-visible (the `?year=` tab and headings), so it is editable and required. `slug` stays locked.
 
 ### 2.1 Manual verification (maintainer)
-- [ ] Apply `supabase/migrations/20261025000000_admin_console_increment_2.sql` in the Supabase SQL editor. Without it every save in increment 2 fails with "permessi insufficienti".
-- [ ] Edit a play's `short_desc` and check `/spettacoli` and `/spettacoli/[slug]` without a redeploy.
-- [ ] Edit a production's `notes` and check the production history on `/spettacoli/[slug]`.
-- [ ] Edit a cast entry (for example `character_name`) and check the cast list on `/spettacoli/[slug]` and the person page on `/attori/[slug]`.
-- [ ] Anon-key writes to `plays`, `productions` and `performance_people` are rejected (repeat the no-op PATCH check from 1.7 after applying the migration).
-- [ ] Try the new pages on a phone: `/admin/plays` → a play → a production → a date → *Cast e crediti*.
+- [x] Apply `supabase/migrations/20261025000000_admin_console_increment_2.sql` in the Supabase SQL editor. Without it every save in increment 2 fails with "permessi insufficienti".
+- [x] Edit a play's `short_desc` and check `/spettacoli` and `/spettacoli/[slug]` without a redeploy.
+- [x] Edit a production's `notes` and check the production history on `/spettacoli/[slug]`.
+- [x] Edit a cast entry (for example `character_name`) and check the cast list on `/spettacoli/[slug]` and the person page on `/attori/[slug]`.
+- [x] Anon-key writes to `plays`, `productions` and `performance_people` are rejected (repeat the no-op PATCH check from 1.7 after applying the migration).
+- [x] Try the new pages on a phone: `/admin/plays` → a play → a production → a date → *Cast e crediti*.
 
 ## Increment 3: create and delete (PR 3, closes #14)
 
@@ -168,13 +168,13 @@ Design notes:
 - The `FormShell` bottom padding moved to the admin layout, so a delete block can follow a form without a large gap.
 
 ### 3.1 Manual verification (maintainer)
-- [ ] Apply `supabase/migrations/20261026000000_admin_console_increment_3.sql` in the Supabase SQL editor.
-- [ ] Create a test person from `/admin/people/new`, check `/attori/<slug>` (it may take a moment to render the first time) and `/sitemap.xml`, then delete the person and check the page is gone.
-- [ ] Create a test play, add a production, add a date to it and add a cast entry. Check each appears on `/spettacoli/<slug>`, then delete in reverse order (cast entry, date, production, play).
-- [ ] Try to delete a person who is in a cast, and a play with productions: both must be refused with a message and nothing deleted.
-- [ ] Anon-key insert and delete are rejected by RLS on all five tables (no-op style check, as in 1.7, with a row that is safe to remove or a deliberately invalid insert).
-- [ ] Copy a cast: on a date with no cast, copy from another date of the same production, check the entries and `/spettacoli/<slug>`, then copy again and check it is refused with "già presenti". Try it on a date that already has some entries, to see that only the missing ones are added.
-- [ ] Try creating, deleting and copying on a phone.
+- [x] Apply `supabase/migrations/20261026000000_admin_console_increment_3.sql` in the Supabase SQL editor.
+- [x] Create a test person from `/admin/people/new`, check `/attori/<slug>` (it may take a moment to render the first time) and `/sitemap.xml`, then delete the person and check the page is gone.
+- [x] Create a test play, add a production, add a date to it and add a cast entry. Check each appears on `/spettacoli/<slug>`, then delete in reverse order (cast entry, date, production, play).
+- [x] Try to delete a person who is in a cast, and a play with productions: both must be refused with a message and nothing deleted.
+- [x] Anon-key insert and delete are rejected by RLS on all five tables (no-op style check, as in 1.7, with a row that is safe to remove or a deliberately invalid insert).
+- [x] Copy a cast: on a date with no cast, copy from another date of the same production, check the entries and `/spettacoli/<slug>`, then copy again and check it is refused with "già presenti". Try it on a date that already has some entries, to see that only the missing ones are added.
+- [x] Try creating, deleting and copying on a phone.
 
 ## Later (not committed)
 
