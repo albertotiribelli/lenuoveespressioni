@@ -15,6 +15,7 @@ import { revalidatePath, updateTag } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { NotAdminError, requireAdmin } from '@/lib/admin/requireAdmin'
 import {
+  copyCastFromDate,
   createCastEntry,
   createDate,
   createPerson,
@@ -441,5 +442,82 @@ describe('deleteCastEntry', () => {
     deleteClient({ deleted: { id: ID } })
     expect((await deleteCastEntry('nope', ID, PREV, new FormData())).ok).toBe(false)
     expect((await deleteCastEntry('323e4567-e89b-12d3-a456-426614174000', 'nope', PREV, new FormData())).ok).toBe(false)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Copy cast
+// ---------------------------------------------------------------------------
+
+describe('copyCastFromDate', () => {
+  const TARGET = '123e4567-e89b-12d3-a456-426614174000'
+  const SOURCE = '423e4567-e89b-12d3-a456-426614174000'
+  const P1 = '523e4567-e89b-12d3-a456-426614174001'
+  const P2 = '523e4567-e89b-12d3-a456-426614174002'
+  const cast = (person_id: string, character_name: string | null = null) => ({
+    person_id,
+    role: 'actor',
+    character_name,
+    sort_order: 1,
+    costume_url: null,
+    notes: null,
+  })
+
+  // from('performance_people').select(cols).eq('date_id', x) -> rows of that date; .insert(rows).select() -> inserted
+  function copyClient(rowsByDate: Record<string, unknown[]>, insertResult: { data: unknown; error: unknown } = { data: [], error: null }) {
+    const insert = jest.fn().mockReturnValue({ select: jest.fn().mockResolvedValue(insertResult) })
+    const from = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        eq: jest.fn().mockImplementation((_col: string, dateId: string) => Promise.resolve({ data: rowsByDate[dateId] ?? [], error: null })),
+      }),
+      insert,
+    })
+    mockRequireAdmin.mockResolvedValue({ user: { email: 'admin@x.it' }, supabase: { from } })
+    return { insert, from }
+  }
+  const src = (id = SOURCE) => form({ source_date_id: id })
+
+  it('rejects non-admins', async () => {
+    mockRequireAdmin.mockRejectedValue(new NotAdminError())
+    expect(await copyCastFromDate(TARGET, PREV, src())).toEqual({ ok: false, error: 'Non autorizzato' })
+  })
+
+  it('validates the ids and refuses to copy a date onto itself', async () => {
+    const { insert } = copyClient({})
+    expect((await copyCastFromDate('nope', PREV, src())).ok).toBe(false)
+    expect((await copyCastFromDate(TARGET, PREV, form({}))).fieldErrors?.source_date_id).toBeDefined()
+    expect((await copyCastFromDate(TARGET, PREV, src('nope'))).fieldErrors?.source_date_id).toBeDefined()
+    expect((await copyCastFromDate(TARGET, PREV, src(TARGET))).fieldErrors?.source_date_id).toBeDefined()
+    expect(insert).not.toHaveBeenCalled()
+  })
+
+  it('refuses a source without cast', async () => {
+    const { insert } = copyClient({ [SOURCE]: [] })
+    expect((await copyCastFromDate(TARGET, PREV, src())).error).toMatch(/non ha cast/)
+    expect(insert).not.toHaveBeenCalled()
+  })
+
+  it('refuses when everything is already on the target', async () => {
+    const { insert } = copyClient({ [SOURCE]: [cast(P1)], [TARGET]: [cast(P1)] })
+    expect((await copyCastFromDate(TARGET, PREV, src())).error).toMatch(/già presenti/)
+    expect(insert).not.toHaveBeenCalled()
+  })
+
+  it('copies only the missing entries in one insert, revalidates and redirects to the cast list', async () => {
+    const { insert } = copyClient({ [SOURCE]: [cast(P1, 'Ercole'), cast(P2, 'Megara')], [TARGET]: [cast(P1, 'Ercole')] }, { data: [{ id: 'n1' }], error: null })
+    await expect(copyCastFromDate(TARGET, PREV, src())).rejects.toThrow(`NEXT_REDIRECT:/admin/dates/${TARGET}/cast`)
+    expect(insert).toHaveBeenCalledTimes(1)
+    expect(insert).toHaveBeenCalledWith([expect.objectContaining({ date_id: TARGET, person_id: P2, character_name: 'Megara' })])
+    expect(updateTag).toHaveBeenCalledWith('people')
+    expect(revalidatePath).toHaveBeenCalledWith('/spettacoli/[slug]', 'page')
+  })
+
+  it('reports a denied insert (RLS returns no rows) and hides database errors', async () => {
+    copyClient({ [SOURCE]: [cast(P1)] }, { data: [], error: null })
+    expect((await copyCastFromDate(TARGET, PREV, src())).ok).toBe(false)
+    copyClient({ [SOURCE]: [cast(P1)] }, { data: null, error: { message: 'secret detail' } })
+    const r = await copyCastFromDate(TARGET, PREV, src())
+    expect(r.error).not.toMatch(/secret/)
+    expect(revalidatePath).not.toHaveBeenCalled()
   })
 })

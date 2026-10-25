@@ -22,6 +22,7 @@ jest.mock('@/app/admin/actions', () => ({
   createProduction: jest.fn(),
   createDate: jest.fn(),
   createCastEntry: jest.fn(),
+  copyCastFromDate: jest.fn(),
   sendMagicLink: jest.fn(),
 }))
 
@@ -30,6 +31,7 @@ import DateForm from '@/components/admin/DateForm'
 import PlayForm from '@/components/admin/PlayForm'
 import ProductionForm from '@/components/admin/ProductionForm'
 import PerformancePersonForm from '@/components/admin/PerformancePersonForm'
+import CopyCastForm from '@/components/admin/CopyCastForm'
 
 const person = {
   id: 'p1',
@@ -196,5 +198,31 @@ describe('create mode (no existing row)', () => {
 
     render(<PerformancePersonForm entry={{ id: 'e1', role: 'actor', character_name: null, sort_order: null, costume_url: null, notes: null }} />)
     expect(screen.queryByLabelText(/^Persona\b/)).not.toBeInTheDocument()
+  })
+})
+
+describe('CopyCastForm', () => {
+  const sources = [
+    { id: 'd1', label: '16 maggio 2026 · La Campanella (14 voci)' },
+    { id: 'd2', label: '17 maggio 2026 · La Campanella (12 voci)' },
+  ]
+
+  it('lists the other dates with their cast size', () => {
+    render(<CopyCastForm dateId="d0" sources={sources} />)
+    expect(screen.getByLabelText(/Data di partenza/)).toHaveValue('')
+    expect(screen.getByRole('option', { name: /17 maggio 2026.*12 voci/ })).toHaveValue('d2')
+  })
+
+  it('renders nothing when no other date has a cast', () => {
+    const { container } = render(<CopyCastForm dateId="d0" sources={[]} />)
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('shows the server error and disables the button while copying', () => {
+    mockState = { ok: false, error: 'Tutte le voci di quella data sono già presenti.' }
+    mockPending = true
+    render(<CopyCastForm dateId="d0" sources={sources} />)
+    expect(screen.getByRole('status')).toHaveTextContent('già presenti')
+    expect(screen.getByRole('button', { name: /Copia in corso/ })).toBeDisabled()
   })
 })
