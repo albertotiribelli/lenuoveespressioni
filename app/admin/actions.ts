@@ -6,6 +6,7 @@ import { revalidatePath, updateTag } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { NotAdminError, parseAdminEmails, requireAdmin } from '@/lib/admin/requireAdmin'
 import { slugify, uniqueSlug } from '@/lib/admin/slug'
+import { castRowsToCopy, type CastRow } from '@/lib/admin/castCopy'
 import {
   isUuid,
   parseDateInput,
@@ -344,6 +345,48 @@ export async function createCastEntry(dateId: string, _prev: ActionState, formDa
     },
     formData
   )
+}
+
+interface BulkInsertBuilder {
+  insert(values: object[]): { select(columns: string): PromiseLike<{ data: unknown; error: unknown }> }
+}
+
+const CAST_COLUMNS = 'person_id, role, character_name, sort_order, costume_url, notes'
+
+// Copies the cast of another date onto this one, skipping entries that are already there.
+// One bulk insert, so it either copies everything or nothing.
+export async function copyCastFromDate(targetDateId: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
+  const auth = await authorize()
+  if (!auth.ok) return auth.state
+  const { supabase } = auth.ctx
+
+  const sourceDateId = String(formData.get('source_date_id') ?? '').trim()
+  if (!isUuid(targetDateId)) return { ok: false, error: 'Identificativo non valido' }
+  if (!sourceDateId) return { ok: false, fieldErrors: { source_date_id: 'Scegli la data da cui copiare' } }
+  if (!isUuid(sourceDateId)) return { ok: false, fieldErrors: { source_date_id: 'Data non valida' } }
+  if (sourceDateId === targetDateId) return { ok: false, fieldErrors: { source_date_id: 'Scegli un\'altra data' } }
+
+  const [source, existing] = await Promise.all([
+    supabase.from('performance_people').select(CAST_COLUMNS).eq('date_id', sourceDateId),
+    supabase.from('performance_people').select(CAST_COLUMNS).eq('date_id', targetDateId),
+  ])
+  if (source.error || existing.error) return { ok: false, error: 'Copia non riuscita. Riprova.' }
+
+  const sourceRows = (source.data ?? []) as CastRow[]
+  if (sourceRows.length === 0) return { ok: false, error: 'La data scelta non ha cast da copiare.' }
+
+  const rows = castRowsToCopy(sourceRows, (existing.data ?? []) as CastRow[], targetDateId)
+  if (rows.length === 0) return { ok: false, error: 'Tutte le voci di quella data sono già presenti.' }
+
+  const { data, error } = await (supabase.from('performance_people') as unknown as BulkInsertBuilder)
+    .insert(rows)
+    .select('id')
+  if (error) return { ok: false, error: 'Copia non riuscita. Riprova.' }
+  // RLS denial inserts nothing and returns no rows
+  if (!Array.isArray(data) || data.length !== rows.length) return { ok: false, error: 'Copia non riuscita: permessi insufficienti' }
+
+  revalidateCastPages()
+  redirect(`/admin/dates/${targetDateId}/cast`)
 }
 
 function revalidateCastPages() {

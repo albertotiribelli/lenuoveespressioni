@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireAdminPage } from '@/lib/admin/guard'
 import { formatDateItLong } from '@/lib/formatDate'
+import CopyCastForm from '@/components/admin/CopyCastForm'
 
 const ROW = 'flex min-h-11 flex-col gap-1 rounded-sm border border-[var(--border)] bg-[var(--card-bg)] p-3 hover:border-[var(--accent)]'
 
@@ -11,7 +12,7 @@ export default async function DateCast({ params }: { params: Promise<{ id: strin
 
   const { data: date } = await supabase
     .from('dates')
-    .select('id, date, theater_name, productions(plays(title))')
+    .select('id, date, theater_name, production_id, productions(plays(title))')
     .eq('id', id)
     .maybeSingle()
   if (!date) notFound()
@@ -21,6 +22,20 @@ export default async function DateCast({ params }: { params: Promise<{ id: strin
     .select('id, role, character_name, sort_order, people(name)')
     .eq('date_id', id)
   if (error) throw error
+
+  // Other dates of the same production that have a cast, to copy from
+  const { data: siblings } = date.production_id
+    ? await supabase
+        .from('dates')
+        .select('id, date, theater_name, performance_people(count)')
+        .eq('production_id', date.production_id)
+        .neq('id', id)
+        .order('date', { ascending: false })
+    : { data: [] }
+  const sources = (siblings ?? [])
+    .map((d) => ({ id: d.id, count: d.performance_people[0]?.count ?? 0, label: d.date, theater: d.theater_name }))
+    .filter((d) => d.count > 0)
+    .map((d) => ({ id: d.id, label: `${formatDateItLong(d.label)} · ${d.theater} (${d.count} voci)` }))
 
   const entries = [...(data ?? [])].sort(
     (a, b) => (a.sort_order ?? Number.MAX_SAFE_INTEGER) - (b.sort_order ?? Number.MAX_SAFE_INTEGER)
@@ -40,6 +55,7 @@ export default async function DateCast({ params }: { params: Promise<{ id: strin
       <p className="text-sm opacity-70">
         {formatDateItLong(date.date)} · {date.productions?.plays?.title ?? 'Senza spettacolo'}
       </p>
+      <CopyCastForm dateId={date.id} sources={sources} />
       <ul className="flex flex-col gap-2">
         {entries.map((e) => (
           <li key={e.id}>

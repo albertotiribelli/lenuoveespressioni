@@ -9,6 +9,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Admin console: copy cast between dates.** The cast list of a date has a "Copia il cast da un'altra data" form that copies the cast entries of another date of the same production. Entries already on the date (same person, role and character) are skipped, and the copy is a single insert, so it either copies everything or nothing. No new migration: it uses the increment 3 insert policy
 - **Admin console, increment 3** (issue #14): create and delete people, plays, productions (from a play), dates (from a production) and cast entries (from a date). New people and plays get a slug generated from the name or title (`mario_rossi`, `mario_rossi_2` if taken). Deleting asks for confirmation and is blocked while other rows depend on the row (a person in a cast, a play with productions, a production with dates, a date with cast entries). Create and delete revalidate the public pages and `/sitemap.xml`
 - `supabase/migrations/20261026000000_admin_console_increment_3.sql`: RLS `INSERT` and `DELETE` policies for `people`, `dates`, `plays`, `productions` and `performance_people`
 - **Admin console, increment 2** (issue #14): edit `plays` (title, descriptions, poster, trailer and YouTube URLs), `productions` (season, notes) and `performance_people` (role, character, order, costume URL, notes) from `/admin/plays`, `/admin/productions/[id]` and `/admin/dates/[id]/cast`. Slugs and foreign keys stay locked
