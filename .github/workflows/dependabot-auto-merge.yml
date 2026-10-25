@@ -1,0 +1,45 @@
+name: Dependabot auto-merge
+
+on: pull_request
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Auto-merge patch updates
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.user.login == 'dependabot[bot]' }}
+
+    steps:
+      - name: Read the Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Only when EVERY updated dependency in the PR is a patch bump. This also covers grouped PRs
+      # (e.g. the minor-and-patch group), which are left for manual review if they contain a minor.
+      - name: Check that all updates are patch updates
+        id: policy
+        env:
+          UPDATES: ${{ steps.metadata.outputs.updated-dependencies-json }}
+        run: |
+          echo "$UPDATES" | jq -r '.[] | "\(.dependencyName): \(.updateType)"'
+          if echo "$UPDATES" | jq -e 'length > 0 and all(.[]; .updateType == "version-update:semver-patch")' >/dev/null; then
+            echo "patch_only=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "patch_only=false" >> "$GITHUB_OUTPUT"
+            echo "Not a patch-only update: left for manual review."
+          fi
+
+      # Enables GitHub's auto-merge: the PR merges only once the required checks pass. This needs
+      # "Allow auto-merge" in the repo settings and a branch protection rule on main that requires
+      # the CI check. Without them this step fails and nothing is merged.
+      - name: Enable auto-merge
+        if: ${{ steps.policy.outputs.patch_only == 'true' }}
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --merge "$PR_URL"

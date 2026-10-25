@@ -9,6 +9,8 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Dependabot auto-merge:** `.github/workflows/dependabot-auto-merge.yml` enables GitHub auto-merge for Dependabot PRs whose updates are **all patch** bumps (grouped PRs with a minor, and every major, stay manual). It merges only after the required checks pass, so it needs *Allow auto-merge* in the repo settings and a branch protection rule on `main` requiring `Type-check, test & build`; without those it fails and merges nothing
+- `dependabot.yml` ignores major bumps of `tailwindcss`, `typescript`, `react`, `react-dom`, `@types/react`, `@types/react-dom`, `@types/node` and `eslint` (each needs a migration); their minor and patch updates still arrive
 - **Lighthouse CI (#8, #10):** `.github/workflows/lighthouse.yml` builds the site and runs Lighthouse (3 runs, median) on `/`, `/spettacoli`, `/attori` and `/archivio` against the local build, with budgets in `lighthouserc.json`: performance >= 0.85 and SEO >= 0.9 fail the job; accessibility, best-practices, LCP, TBT and CLS only warn. Reports are uploaded as an artifact. Needs the repository variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public values); the job is skipped without them
 - Admin security audit (#17): regression tests that every admin server action refuses without a session and for a non-admin user, and that every admin page calls `requireAdminPage()`. Findings in `docs/plans/admin-console.md`
 - `.github/dependabot.yml`: weekly npm updates (minor and patch grouped in one PR) and monthly GitHub Actions updates (#9)
