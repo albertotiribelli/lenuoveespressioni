@@ -28,12 +28,17 @@ jobs:
       - name: Test
         run: npm test
 
+      # Many pages query Supabase while they are prerendered. CI has no database and no secrets, so the
+      # build talks to scripts/fake-supabase.mjs, which answers every read with an empty result.
+      # (The real build still fails when Supabase is unreachable, on purpose.)
       - name: Build
-        run: npm run build
+        run: |
+          node scripts/fake-supabase.mjs 54321 &
+          FAKE_PID=$!
+          trap 'kill $FAKE_PID' EXIT
+          for i in $(seq 1 20); do curl -fs http://127.0.0.1:54321/__health && break; sleep 0.5; done
+          npm run build
         env:
-          # Stub values so Next.js build doesn't fail on missing env vars.
-          # The build resolves types and validates routes only;
-          # generateStaticParams catches errors and falls back to an empty list.
-          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
           NEXT_PUBLIC_SITE_URL: https://placeholder.vercel.app
