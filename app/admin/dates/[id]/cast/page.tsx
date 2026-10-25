@@ -31,7 +31,12 @@ export default async function DateCast({ params }: { params: Promise<{ id: strin
       <Link href={`/admin/dates/${date.id}`} className="min-h-11 content-center text-sm underline">
         ← {date.theater_name}
       </Link>
-      <h1 className="font-serif text-2xl">Cast e crediti</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-serif text-2xl">Cast e crediti</h1>
+        <Link href={`/admin/dates/${date.id}/cast/new`} className="flex min-h-11 items-center rounded-sm border border-[var(--accent)] px-4 text-[var(--accent)]">
+          + Nuova
+        </Link>
+      </div>
       <p className="text-sm opacity-70">
         {formatDateItLong(date.date)} · {date.productions?.plays?.title ?? 'Senza spettacolo'}
       </p>

@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireAdminPage } from '@/lib/admin/guard'
 import PlayForm from '@/components/admin/PlayForm'
+import DeleteButton from '@/components/admin/DeleteButton'
+import { deletePlay } from '@/app/admin/actions'
 
 const ROW = 'flex min-h-11 items-center justify-between rounded-sm border border-[var(--border)] bg-[var(--card-bg)] p-3 hover:border-[var(--accent)]'
 
@@ -25,8 +27,13 @@ export default async function EditPlay({ params }: { params: Promise<{ id: strin
       </Link>
       <h1 className="font-serif text-2xl">{play.title}</h1>
       <PlayForm play={play} />
-      <div className="flex flex-col gap-2 pb-24">
-        <h2 className="font-bold">Produzioni</h2>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-bold">Produzioni</h2>
+          <Link href={`/admin/plays/${play.id}/productions/new`} className="flex min-h-11 items-center rounded-sm border border-[var(--accent)] px-4 text-[var(--accent)]">
+            + Nuova
+          </Link>
+        </div>
         <ul className="flex flex-col gap-2">
           {productions.map((pr) => (
             <li key={pr.id}>
@@ -39,6 +46,7 @@ export default async function EditPlay({ params }: { params: Promise<{ id: strin
           {productions.length === 0 && <li className="text-sm opacity-70">Nessuna produzione.</li>}
         </ul>
       </div>
+      <DeleteButton action={deletePlay.bind(null, play.id)} label="questo spettacolo" />
     </section>
   )
 }

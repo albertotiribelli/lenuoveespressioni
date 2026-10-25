@@ -9,7 +9,7 @@ interface FormShellProps {
 
 export default function FormShell({ action, pending, state, children }: FormShellProps) {
   return (
-    <form action={action} className="flex flex-col gap-4 pb-24">
+    <form action={action} className="flex flex-col gap-4">
       {children}
       <div className="fixed inset-x-0 bottom-0 border-t border-[var(--border)] bg-[var(--card-bg)] p-3 sm:static sm:border-0 sm:bg-transparent sm:p-0">
         <div className="mx-auto flex max-w-2xl items-center gap-3">

@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireAdminPage } from '@/lib/admin/guard'
 import PersonForm from '@/components/admin/PersonForm'
+import DeleteButton from '@/components/admin/DeleteButton'
+import { deletePerson } from '@/app/admin/actions'
 
 export default async function EditPerson({ params }: { params: Promise<{ id: string }> }) {
   const { supabase } = await requireAdminPage()
@@ -21,6 +23,7 @@ export default async function EditPerson({ params }: { params: Promise<{ id: str
       </Link>
       <h1 className="font-serif text-2xl">{person.name}</h1>
       <PersonForm person={person} />
+      <DeleteButton action={deletePerson.bind(null, person.id)} label="questa persona" />
     </section>
   )
 }

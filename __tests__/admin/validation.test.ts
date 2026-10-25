@@ -1,5 +1,6 @@
 import {
   parseDateInput,
+  parseNewCastEntryInput,
   parsePerformancePersonInput,
   parsePersonInput,
   parsePlayInput,
@@ -130,5 +131,23 @@ describe('parsePerformancePersonInput', () => {
     })
     expect(parsePerformancePersonInput(form({ ...valid, sort_order: '1.5' })).ok).toBe(false)
     expect(parsePerformancePersonInput(form({ ...valid, role: '' }))).toMatchObject({ ok: false, errors: { role: expect.any(String) } })
+  })
+})
+
+describe('parseNewCastEntryInput', () => {
+  const PID = '123e4567-e89b-12d3-a456-426614174000'
+  const valid = { person_id: PID, role: 'actor', character_name: 'Ercole', sort_order: '1', costume_url: '', notes: '' }
+
+  it('adds the person id to the cast fields', () => {
+    expect(parseNewCastEntryInput(form(valid))).toEqual({
+      ok: true,
+      data: { person_id: PID, role: 'actor', character_name: 'Ercole', sort_order: 1, costume_url: null, notes: null },
+    })
+  })
+
+  it('requires a valid person and still validates the other fields', () => {
+    expect(parseNewCastEntryInput(form({ ...valid, person_id: '' }))).toMatchObject({ ok: false, errors: { person_id: expect.any(String) } })
+    expect(parseNewCastEntryInput(form({ ...valid, person_id: 'nope' }))).toMatchObject({ ok: false, errors: { person_id: expect.any(String) } })
+    expect(parseNewCastEntryInput(form({ ...valid, role: 'wizard' }))).toMatchObject({ ok: false, errors: { role: expect.any(String) } })
   })
 })

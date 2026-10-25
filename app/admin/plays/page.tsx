@@ -14,7 +14,12 @@ export default async function AdminPlays() {
 
   return (
     <section className="flex flex-col gap-4">
-      <h1 className="font-serif text-2xl">Spettacoli</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-serif text-2xl">Spettacoli</h1>
+        <Link href="/admin/plays/new" className="flex min-h-11 items-center rounded-sm border border-[var(--accent)] px-4 text-[var(--accent)]">
+          + Nuovo
+        </Link>
+      </div>
       <ul className="flex flex-col gap-2">
         {(plays ?? []).map((p) => {
           const missing = [!p.description && 'descrizione', !p.poster_url && 'locandina'].filter(Boolean).join(', ')

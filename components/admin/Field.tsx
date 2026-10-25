@@ -6,7 +6,7 @@ interface FieldProps {
   required?: boolean
   error?: string
   multiline?: boolean
-  options?: readonly string[]
+  options?: readonly (string | { value: string; label: string })[]
 }
 
 const INPUT =
@@ -24,12 +24,17 @@ export default function Field({ name, label, defaultValue, type = 'text', requir
       {options ? (
         <select id={id} name={name} defaultValue={defaultValue ?? ''} required={required} aria-invalid={!!error} aria-describedby={describedBy} className={INPUT}>
           {!defaultValue && <option value="" />}
-          {defaultValue && !options.includes(defaultValue) && <option value={defaultValue}>{defaultValue}</option>}
-          {options.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
+          {defaultValue && !options.some((o) => (typeof o === 'string' ? o : o.value) === defaultValue) && (
+            <option value={defaultValue}>{defaultValue}</option>
+          )}
+          {options.map((o) => {
+            const { value, label } = typeof o === 'string' ? { value: o, label: o } : o
+            return (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            )
+          })}
         </select>
       ) : multiline ? (
         <textarea id={id} name={name} defaultValue={defaultValue ?? ''} rows={6} aria-invalid={!!error} aria-describedby={describedBy} className={INPUT} />

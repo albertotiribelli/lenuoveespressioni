@@ -15,7 +15,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { data } = await supabase.auth.getUser()
 
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 py-6">
+    <div className="mx-auto w-full max-w-2xl px-4 pb-28 pt-6">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-2 border-b border-[var(--border)] pb-3">
         <Link href="/admin" className="min-h-11 content-center font-serif text-lg">
           Admin
