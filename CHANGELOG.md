@@ -9,6 +9,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **Lighthouse CI (#8, #10):** `.github/workflows/lighthouse.yml` builds the site and runs Lighthouse (3 runs, median) on `/`, `/spettacoli`, `/attori` and `/archivio` against the local build, with budgets in `lighthouserc.json`: performance >= 0.85 and SEO >= 0.9 fail the job; accessibility, best-practices, LCP, TBT and CLS only warn. Reports are uploaded as an artifact. Needs the repository variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public values); the job is skipped without them
 - Admin security audit (#17): regression tests that every admin server action refuses without a session and for a non-admin user, and that every admin page calls `requireAdminPage()`. Findings in `docs/plans/admin-console.md`
 - `.github/dependabot.yml`: weekly npm updates (minor and patch grouped in one PR) and monthly GitHub Actions updates (#9)
 - `scripts/fake-supabase.mjs` and a hermetic CI build: the `Type-check, test & build` job was red on `main` since at least June because pages query Supabase while prerendering and the placeholder URL did not resolve. CI now builds against a local fake that answers every read with an empty result (no secrets, no network). The production build is unchanged and still fails if Supabase is unreachable
@@ -26,6 +27,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `getPlaySlugs` and `getPersonSlugs` lightweight queries for `generateStaticParams`
 
 ### Changed
+- **Performance (#10):** YouTube trailer iframes are lazy-loaded. The home page loaded five of them up front, which delayed the first paint (worst run: 8.5 s FCP). Local Lighthouse performance on `/` went from 89 / 85 / 57 (3 runs) to 97 / 97 / 97, with LCP 3.8 s to 2.7 s
 - **Performance (#7, #11, #16):** `/attori` is now statically rendered (ISR, 1 h) instead of running a function on every request. The hidden company history (`?edespressionisimili`) is switched on in the browser and loads its data from the new cached `/api/attori/timeline`, so regular visits never pay for it. `vercel.json` pins the functions to `dub1` (Dublin), next to the Supabase database (AWS eu-west-1); they ran in `iad1` (US East) by default, so every query crossed the Atlantic
 - Admin server actions share one `runUpdate` helper (admin check, id and input validation, update through the session client, revalidation)
 - `/spettacoli/[slug]`: drops `searchParams` prop, enabling ISR; `?year=` tab is now initialised client-side via `useEffect` after hydration
