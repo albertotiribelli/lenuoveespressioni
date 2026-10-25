@@ -7,8 +7,8 @@ Issue: #14 "[Features] - Admin console" (opened 2026-10-17).
 | Increment | State |
 |---|---|
 | 1. Edit `people` and `dates` | Done. PR #15 merged. Login works in production and the first real edit (photo album link) is live. Manual checks in 1.7 mostly done, see below. |
-| 2. Remaining tables | Code done on branch `feat/admin-console-14-increment-2` (not committed or pushed yet). Waiting on the migration being applied in Supabase and the manual checks in 2.1. |
-| 3. Create and delete | Not started |
+| 2. Remaining tables | Done. PR #18 merged. Manual checks in 2.1 still to be ticked. |
+| 3. Create and delete | Code done on branch `feat/admin-console-14-increment-3` (PR closes #14). Waiting on the migration being applied in Supabase and the manual checks in 3.1. |
 
 Open items:
 - ~~Add the redirect URLs in Supabase~~ Done (2026-10-25): `https://www.lenuoveespressioni.it/auth/callback` is allowed and the magic link lands on `/admin`. Keep `http://localhost:3000/auth/callback` for local development, and add the non-`www` origin if the site is ever served from it.
@@ -153,14 +153,30 @@ Design notes:
 
 ## Increment 3: create and delete (PR 3, closes #14)
 
-- [ ] RLS `INSERT` and `DELETE` policies for admins.
-- [ ] Create forms, including `slug` generation (and a uniqueness check) for new people and plays.
-- [ ] Delete with a confirmation dialog. Block or warn on rows that other rows depend on (a play with productions, a production with dates, a person with cast entries), or define the cascade explicitly.
-- [ ] `generateStaticParams` and sitemap pick up new slugs (revalidate the list pages and sitemap on create or delete).
-- [ ] Tests for create and delete, including the dependency checks.
+- [x] RLS `INSERT` and `DELETE` policies for admins on all five tables: `supabase/migrations/20261026000000_admin_console_increment_3.sql`.
+- [x] Create forms. The edit forms double as create forms (no row means create). New pages: `/admin/people/new`, `/admin/plays/new`, `/admin/plays/[id]/productions/new`, `/admin/productions/[id]/dates/new` and `/admin/dates/[id]/cast/new` (with a person picker). Each list or parent page has a "+ Nuova" button. After creating, the admin lands on the new row.
+- [x] Slug generation for new people and plays (`lib/admin/slug.ts`): lowercase, accents removed, underscores like the existing slugs (`alberto_tiribelli`), then `_2`, `_3` if the slug is taken. A database duplicate-key error is reported as "Esiste già una voce uguale". Slugs stay locked after creation.
+- [x] Delete with an inline two-step confirmation (`DeleteButton`) on every edit page.
+- [x] Dependencies: **delete is blocked, not cascaded.** The app counts dependent rows first and refuses with a message: a person in cast entries, a play with productions, a production with dates, a date with cast entries. Cast entries have no dependents, so they can always be deleted. This does not rely on the database foreign key rules (not visible from the app). Deleting a whole production therefore means deleting its cast entries and dates first.
+- [x] New slugs reach the public site: `generateStaticParams` pages render on demand for unknown slugs (`dynamicParams`), and create and delete call `revalidatePath` for the list pages, the `[slug]` pages and `/sitemap.xml`.
+- [x] Tests for slugs, validation, create and delete actions (including the dependency checks, denied writes and hidden database errors), create-mode forms and `DeleteButton`. `tsc --noEmit` is clean, `npm test` has 191 passing tests and `npm run build` passes.
+- [x] Docs: README, CHANGELOG, MONITOR.
+
+Design notes:
+- A cast entry is created from a date, so adding the same person to every date of a run is repeated work. A "copy cast to another date" shortcut is the obvious next improvement (see Later).
+- The `FormShell` bottom padding moved to the admin layout, so a delete block can follow a form without a large gap.
+
+### 3.1 Manual verification (maintainer)
+- [ ] Apply `supabase/migrations/20261026000000_admin_console_increment_3.sql` in the Supabase SQL editor.
+- [ ] Create a test person from `/admin/people/new`, check `/attori/<slug>` (it may take a moment to render the first time) and `/sitemap.xml`, then delete the person and check the page is gone.
+- [ ] Create a test play, add a production, add a date to it and add a cast entry. Check each appears on `/spettacoli/<slug>`, then delete in reverse order (cast entry, date, production, play).
+- [ ] Try to delete a person who is in a cast, and a play with productions: both must be refused with a message and nothing deleted.
+- [ ] Anon-key insert and delete are rejected by RLS on all five tables (no-op style check, as in 1.7, with a row that is safe to remove or a deliberately invalid insert).
+- [ ] Try creating and deleting on a phone.
 
 ## Later (not committed)
 
+- Copy the cast of one date to another date, or edit the cast of a whole production at once.
 - Image upload to Supabase Storage with client-side resize (the camera or gallery on a phone).
 - Audit log of who changed what.
 
