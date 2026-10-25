@@ -49,6 +49,7 @@ This project follows [Conventional Commits](https://www.conventionalcommits.org/
 | `seo` | Metadata, Open Graph, sitemap, robots, canonical |
 | `layout` | Header, footer, root layout |
 | `design` | Global styles, typography, colour palette |
+| `admin` | Admin console (`/admin`, auth, admin server actions, RLS migrations) |
 | `types` | TypeScript types and generated DB types |
 | `lib` | Data-fetching helpers in `lib/` |
 | `tickets` | Ticket link feature on dates |

@@ -96,15 +96,17 @@ The `dates.tickets_url` column controls ticket links: `null` hides the button, `
 
 ## Admin console
 
-`/admin` lets the maintainers edit existing `people` and `dates` rows (including from a phone) instead of using the Supabase dashboard. It is `noindex` and not in the sitemap.
+`/admin` lets the maintainers edit existing `people`, `dates`, `plays`, `productions` and the cast and credits of each date (`performance_people`), including from a phone, instead of using the Supabase dashboard. It is `noindex` and not in the sitemap.
 
 Setup:
 1. In Supabase, enable the Email provider (magic link) and add `<site url>/auth/callback` to the allowed redirect URLs.
-2. Edit the placeholder emails in `supabase/migrations/20261018000000_admin_console.sql`, then run it in the Supabase SQL editor (or with the CLI).
+2. Edit the placeholder emails in `supabase/migrations/20261018000000_admin_console.sql`, then run it in the Supabase SQL editor (or with the CLI). Then run `supabase/migrations/20261025000000_admin_console_increment_2.sql`, which adds the update policies for `plays`, `productions` and `performance_people`.
 3. Set `ADMIN_EMAILS` locally and in Vercel (same emails as the `admins` table).
 4. Open `/admin` and request a login link.
 
 To add an admin: insert a row in `public.admins` **and** add the email to `ADMIN_EMAILS`. Writes are authorized by RLS (`is_admin()`), and server actions re-check the session; the service-role key is never used.
+
+Navigation: **Spettacoli** → a play (edit it and open its productions) → a production (edit it and open its dates); **Date** → a date → *Cast e crediti* (edit each cast or crew entry). Slugs, ids and links between rows are read-only.
 
 Saving an edit revalidates the affected public pages on demand (`updateTag` / `revalidatePath`), so no redeploy is needed.
 

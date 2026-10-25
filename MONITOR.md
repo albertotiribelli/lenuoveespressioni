@@ -21,7 +21,7 @@ Live in production. Core feature set complete:
 - Company member grid with role filter and active/alumni sections
 - Hidden membership timeline easter egg (`?edespressionisimili`)
 - Three-tier date strategy (near future / far future / recent past)
-- Admin console at `/admin` (magic-link login, edit existing `people` and `dates`; issue #14 — more tables and create/delete are planned, see `docs/plans/admin-console.md`)
+- Admin console at `/admin` (magic-link login, edit existing `people`, `dates`, `plays`, `productions` and cast and credits; issue #14 — create/delete is planned, see `docs/plans/admin-console.md`)
 - ISR caching on all static routes; `unstable_cache` on dynamic ones
 - Full SEO: per-page metadata, Open Graph, sitemap, robots.txt, canonical URLs
 
