@@ -161,9 +161,10 @@ Design notes:
 - [x] New slugs reach the public site: `generateStaticParams` pages render on demand for unknown slugs (`dynamicParams`), and create and delete call `revalidatePath` for the list pages, the `[slug]` pages and `/sitemap.xml`.
 - [x] Tests for slugs, validation, create and delete actions (including the dependency checks, denied writes and hidden database errors), create-mode forms and `DeleteButton`. `tsc --noEmit` is clean, `npm test` has 191 passing tests and `npm run build` passes.
 - [x] Docs: README, CHANGELOG, MONITOR.
+- [x] **Copy cast between dates** (follow-up PR, stacked on this one): the cast list of a date has a form to copy the cast of another date of the same production. It skips entries already on the date (same person, role and character) and inserts in one statement (all or nothing). It uses the increment 3 insert policy, so there is no new migration.
 
 Design notes:
-- A cast entry is created from a date, so adding the same person to every date of a run is repeated work. A "copy cast to another date" shortcut is the obvious next improvement (see Later).
+- A cast entry belongs to one date. For a run with the same cast, add the cast once and copy it to the other dates.
 - The `FormShell` bottom padding moved to the admin layout, so a delete block can follow a form without a large gap.
 
 ### 3.1 Manual verification (maintainer)
@@ -172,11 +173,12 @@ Design notes:
 - [ ] Create a test play, add a production, add a date to it and add a cast entry. Check each appears on `/spettacoli/<slug>`, then delete in reverse order (cast entry, date, production, play).
 - [ ] Try to delete a person who is in a cast, and a play with productions: both must be refused with a message and nothing deleted.
 - [ ] Anon-key insert and delete are rejected by RLS on all five tables (no-op style check, as in 1.7, with a row that is safe to remove or a deliberately invalid insert).
-- [ ] Try creating and deleting on a phone.
+- [ ] Copy a cast: on a date with no cast, copy from another date of the same production, check the entries and `/spettacoli/<slug>`, then copy again and check it is refused with "già presenti". Try it on a date that already has some entries, to see that only the missing ones are added.
+- [ ] Try creating, deleting and copying on a phone.
 
 ## Later (not committed)
 
-- Copy the cast of one date to another date, or edit the cast of a whole production at once.
+- Edit the cast of a whole production at once (bulk edit across dates).
 - Image upload to Supabase Storage with client-side resize (the camera or gallery on a phone).
 - Audit log of who changed what.
 
