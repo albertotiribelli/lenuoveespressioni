@@ -1,4 +1,10 @@
-import { parseDateInput, parsePersonInput } from '@/lib/admin/validation'
+import {
+  parseDateInput,
+  parsePerformancePersonInput,
+  parsePersonInput,
+  parsePlayInput,
+  parseProductionInput,
+} from '@/lib/admin/validation'
 
 function form(entries: Record<string, string>) {
   const f = new FormData()
@@ -59,5 +65,70 @@ describe('parseDateInput', () => {
   it('rejects a bad time, bad URL and missing required fields', () => {
     const r = parseDateInput(form({ ...valid, time: '25:99', tickets_url: 'not a url', theater_name: ' ' }))
     expect(r).toMatchObject({ ok: false, errors: { time: expect.any(String), tickets_url: expect.any(String), theater_name: expect.any(String) } })
+  })
+})
+
+describe('parsePlayInput', () => {
+  const valid = { title: ' Hercules ', short_desc: '', description: '', poster_url: '', trailer_url: '', youtube_url: '' }
+
+  it('trims, requires the title and turns empty optionals into null', () => {
+    expect(parsePlayInput(form(valid))).toEqual({
+      ok: true,
+      data: { title: 'Hercules', short_desc: null, description: null, poster_url: null, trailer_url: null, youtube_url: null },
+    })
+    expect(parsePlayInput(form({}))).toMatchObject({ ok: false, errors: { title: expect.any(String) } })
+  })
+
+  it('rejects non-http URLs in every URL column, including coming-soon', () => {
+    const r = parsePlayInput(
+      form({ ...valid, poster_url: 'javascript:alert(1)', trailer_url: 'coming-soon', youtube_url: 'youtube.com/x' })
+    )
+    expect(r).toMatchObject({
+      ok: false,
+      errors: { poster_url: expect.any(String), trailer_url: expect.any(String), youtube_url: expect.any(String) },
+    })
+  })
+
+  it('accepts real YouTube and Cloudinary URLs', () => {
+    const r = parsePlayInput(
+      form({ ...valid, trailer_url: 'https://youtu.be/lc3Fe_YLamY?si=abc', poster_url: 'https://res.cloudinary.com/x/image/upload/w_800,h_1200/a' })
+    )
+    expect(r.ok).toBe(true)
+  })
+})
+
+describe('parseProductionInput', () => {
+  it('requires the season and nulls empty notes', () => {
+    expect(parseProductionInput(form({ season_year: ' 2019/2020 ', notes: '' }))).toEqual({
+      ok: true,
+      data: { season_year: '2019/2020', notes: null },
+    })
+    expect(parseProductionInput(form({ season_year: ' ' }))).toMatchObject({ ok: false, errors: { season_year: expect.any(String) } })
+  })
+})
+
+describe('parsePerformancePersonInput', () => {
+  const valid = { role: 'actor', character_name: ' Ercole ', sort_order: '3', costume_url: '', notes: '' }
+
+  it('parses a valid entry, with sort_order as a number', () => {
+    expect(parsePerformancePersonInput(form(valid))).toEqual({
+      ok: true,
+      data: { role: 'actor', character_name: 'Ercole', sort_order: 3, costume_url: null, notes: null },
+    })
+  })
+
+  it('allows an empty sort_order and keeps 0', () => {
+    expect(parsePerformancePersonInput(form({ ...valid, sort_order: '' }))).toMatchObject({ ok: true, data: { sort_order: null } })
+    expect(parsePerformancePersonInput(form({ ...valid, sort_order: '0' }))).toMatchObject({ ok: true, data: { sort_order: 0 } })
+  })
+
+  it('rejects unknown roles, bad numbers and non-http costume URLs', () => {
+    const r = parsePerformancePersonInput(form({ ...valid, role: 'wizard', sort_order: '-1', costume_url: 'ftp://x' }))
+    expect(r).toMatchObject({
+      ok: false,
+      errors: { role: expect.any(String), sort_order: expect.any(String), costume_url: expect.any(String) },
+    })
+    expect(parsePerformancePersonInput(form({ ...valid, sort_order: '1.5' })).ok).toBe(false)
+    expect(parsePerformancePersonInput(form({ ...valid, role: '' }))).toMatchObject({ ok: false, errors: { role: expect.any(String) } })
   })
 })

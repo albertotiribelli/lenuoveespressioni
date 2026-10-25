@@ -10,7 +10,14 @@ jest.mock('@/lib/admin/requireAdmin', () => ({
 import { revalidatePath, updateTag } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { NotAdminError, requireAdmin } from '@/lib/admin/requireAdmin'
-import { sendMagicLink, updateDate, updatePerson } from '@/app/admin/actions'
+import {
+  sendMagicLink,
+  updateDate,
+  updatePerformancePerson,
+  updatePerson,
+  updatePlay,
+  updateProduction,
+} from '@/app/admin/actions'
 
 const mockRequireAdmin = requireAdmin as jest.Mock
 const mockCreateClient = createSupabaseServerClient as jest.Mock
@@ -109,6 +116,98 @@ describe('updateDate', () => {
     expect(revalidatePath).toHaveBeenCalledWith('/')
     expect(revalidatePath).toHaveBeenCalledWith('/spettacoli/[slug]', 'page')
     expect(revalidatePath).toHaveBeenCalledWith('/archivio')
+  })
+})
+
+interface UpdateCase {
+  name: string
+  action: (id: string, prev: { ok: boolean }, formData: FormData) => Promise<{ ok: boolean; error?: string; fieldErrors?: Record<string, string> }>
+  table: string
+  valid: Record<string, string>
+  invalid: Record<string, string>
+  returned: Record<string, string>
+  expectedPaths: string[][]
+  expectedTags: string[]
+  expectedUpdate: Record<string, unknown>
+}
+
+const updateCases: UpdateCase[] = [
+  {
+    name: 'updatePlay',
+    action: updatePlay,
+    table: 'plays',
+    valid: { title: 'Hercules' },
+    invalid: { title: '' },
+    returned: { slug: 'hercules' },
+    expectedPaths: [['/spettacoli'], ['/spettacoli/[slug]', 'page'], ['/media'], ['/']],
+    expectedTags: [],
+    expectedUpdate: { title: 'Hercules' },
+  },
+  {
+    name: 'updateProduction',
+    action: updateProduction,
+    table: 'productions',
+    valid: { season_year: '2024' },
+    invalid: { season_year: '' },
+    returned: { id: ID },
+    expectedPaths: [['/spettacoli/[slug]', 'page'], ['/archivio']],
+    expectedTags: ['dates'],
+    expectedUpdate: { season_year: '2024', notes: null },
+  },
+  {
+    name: 'updatePerformancePerson',
+    action: updatePerformancePerson,
+    table: 'performance_people',
+    valid: { role: 'actor', sort_order: '2' },
+    invalid: { role: 'wizard' },
+    returned: { id: ID },
+    expectedPaths: [['/spettacoli/[slug]', 'page'], ['/attori/[slug]', 'page'], ['/archivio']],
+    expectedTags: ['people', 'dates'],
+    expectedUpdate: { role: 'actor', sort_order: 2 },
+  },
+]
+
+describe.each(updateCases)('$name', ({ action, table, valid, invalid, returned, expectedPaths, expectedTags, expectedUpdate }) => {
+  it('rejects non-admins without touching the database', async () => {
+    mockRequireAdmin.mockRejectedValue(new NotAdminError())
+    expect(await action(ID, PREV, form(valid))).toEqual({ ok: false, error: 'Non autorizzato' })
+    expect(revalidatePath).not.toHaveBeenCalled()
+  })
+
+  it('returns field errors for invalid input and does not write', async () => {
+    const { supabase } = updateChain({ data: null, error: null })
+    const r = await action(ID, PREV, form(invalid))
+    expect(r.ok).toBe(false)
+    expect(r.fieldErrors).toBeDefined()
+    expect(supabase.from).not.toHaveBeenCalled()
+  })
+
+  it('rejects a malformed id', async () => {
+    updateChain({ data: null, error: null })
+    expect((await action('not-a-uuid', PREV, form(valid))).ok).toBe(false)
+  })
+
+  it('hides raw database errors', async () => {
+    updateChain({ data: null, error: { message: 'secret detail' } })
+    const r = await action(ID, PREV, form(valid))
+    expect(r.ok).toBe(false)
+    expect(r.error).not.toMatch(/secret/)
+  })
+
+  it('reports a missing row (RLS denial or wrong id) instead of success', async () => {
+    updateChain({ data: null, error: null })
+    expect((await action(ID, PREV, form(valid))).ok).toBe(false)
+    expect(revalidatePath).not.toHaveBeenCalled()
+  })
+
+  it('updates the right table and revalidates the public pages', async () => {
+    const { chain, supabase } = updateChain({ data: returned, error: null })
+    expect(await action(ID, PREV, form(valid))).toEqual({ ok: true })
+    expect(supabase.from).toHaveBeenCalledWith(table)
+    expect(chain.update).toHaveBeenCalledWith(expect.objectContaining(expectedUpdate))
+    expect(chain.eq).toHaveBeenCalledWith('id', ID)
+    expectedPaths.forEach((args) => expect(revalidatePath).toHaveBeenCalledWith(...(args as [string, 'page'?])))
+    expectedTags.forEach((tag) => expect(updateTag).toHaveBeenCalledWith(tag))
   })
 })
 

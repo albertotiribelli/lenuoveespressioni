@@ -2,19 +2,19 @@
 
 Issue: #14 "[Features] - Admin console" (opened 2026-10-17).
 
-## Status (2026-10-18)
+## Status (2026-10-25)
 
 | Increment | State |
 |---|---|
-| 1. Edit `people` and `dates` | Code done, PR #15 open (`feat/admin-console-14`). Migration applied in Supabase. Waiting on the Supabase redirect URL and the manual checks in 1.7. |
-| 2. Remaining tables | Not started |
+| 1. Edit `people` and `dates` | Done. PR #15 merged. Login works in production and the first real edit (photo album link) is live. Manual checks in 1.7 mostly done, see below. |
+| 2. Remaining tables | Code done on branch `feat/admin-console-14-increment-2` (not committed or pushed yet). Waiting on the migration being applied in Supabase and the manual checks in 2.1. |
 | 3. Create and delete | Not started |
 
-Open items before PR #15 can merge:
-- Add `<site url>/auth/callback` (production) and `http://localhost:3000/auth/callback` to Supabase Auth redirect URLs. The dashboard failed with "Failed to fetch (api.supabase.com)", so retry from another browser or network. Without it, the magic link lands on the Site URL and login fails.
-- Set `ADMIN_EMAILS` in Vercel.
-- Run the manual checks in 1.7.
-- Check whether the public read policy on `people` exposes `personal_data`.
+Open items:
+- ~~Add the redirect URLs in Supabase~~ Done (2026-10-25): `https://www.lenuoveespressioni.it/auth/callback` is allowed and the magic link lands on `/admin`. Keep `http://localhost:3000/auth/callback` for local development, and add the non-`www` origin if the site is ever served from it.
+- ~~Set `ADMIN_EMAILS` in Vercel~~ Done: login works in production.
+- ~~Run the manual checks in 1.7~~ Mostly done (2026-10-25). Still open: editing a person's `bio`, and a login attempt with an email that is not allowed.
+- Check whether the public read policy on `people` exposes `personal_data`. Partly checked on 2026-10-25: with the anon key, no `people` row has a non-null `personal_data`. That means either it is hidden or it is empty. Confirm in the Supabase SQL editor (`select count(*) from people where personal_data is not null`). If the count is above 0, it is hidden. If it is 0, it is only empty, and the policy still needs a look.
 
 > As an admin user I want to be able to update infos on actors and shows, so that I don't have to deal in modifying directly the db. And I want to do that also on mobile.
 
@@ -104,11 +104,15 @@ Public pages use time-based refresh (`revalidate` between 300 and 86400 seconds,
 - [x] `CHANGELOG.md` entry.
 
 ### 1.7 Manual verification (maintainer, on a phone and on desktop)
-- [ ] (blocked on the redirect URL) Magic-link login works, and a non-allowlisted email cannot get in.
+- [x] (confirmed 2026-10-25, after adding `https://www.lenuoveespressioni.it/auth/callback` to the Supabase redirect URLs) Magic-link login works, and a non-allowlisted email cannot get in.
 - [ ] Editing a person's `bio` changes `/attori/[slug]` without a redeploy.
-- [ ] Editing a date's `tickets_url` changes the public play page and home page.
-- [ ] `/admin` is not in `/sitemap.xml` and is disallowed in `/robots.txt`.
-- [ ] Writing with the anon key (no session) is rejected by RLS.
+- [x] (2026-10-25) Editing a date changes the public play page without a redeploy. Verified with `gphotos_url`: `/spettacoli/greatest_showman` shows "Foto →" for the 2026-10-23 date. `tickets_url` on the home page was not checked separately.
+- [x] (2026-10-25) `/admin` is not in `/sitemap.xml` and is disallowed in `/robots.txt`. Unauthenticated `/admin` returns 307 to `/admin/login`.
+- [x] (2026-10-25) Writing with the anon key (no session) is rejected by RLS. Checked with no-op PATCH requests on a real `dates` row and a real `people` row: both returned `[]` (a permitted write returns the row). `admins` is also unreadable with the anon key.
+- [x] **First real use (done 2026-10-25):** add the online photo album link to the last show. In `/admin/dates`, open the most recent past date and paste the album URL in "Link foto (Google Photos)". Then check that "Foto →" appears next to that date in the production history on `/spettacoli/[slug]`, without a redeploy. No code change is needed: `gphotos_url` is already editable in `DateForm` and rendered by `ProductionHistory`.
+  - A production can have several dates, and the link is per date. If the album covers the whole run, put the same URL on each date, or ask whether a production-level link is wanted (that would be a schema change, so it belongs to increment 2 with `productions`).
+  - `gphotos_url` must be an `http(s)` URL. `coming-soon` is rejected (it is only valid for `tickets_url`).
+  - If the login is still blocked, the fallback is to set `dates.gphotos_url` in the Supabase dashboard. The public page then updates on the next time-based refresh (up to 24h) instead of immediately.
 
 ---
 
@@ -123,14 +127,29 @@ Public pages use time-based refresh (`revalidate` between 300 and 86400 seconds,
 
 ## Increment 2: remaining tables (PR 2)
 
-- [ ] Fix the pre-existing `next build` failure first (see lessons above).
-- [ ] Add the `admin` scope to `CONTRIBUTING.md`.
-- [ ] Edit `plays` (`title`, `description`, `short_desc`, `poster_url`, `trailer_url`, `youtube_url`), with `slug` still locked.
-- [ ] Edit `productions` (`season_year`, `notes`).
-- [ ] Edit `performance_people` (cast and credits: `role`, `character_name`, `costume_url`, `notes`, `sort_order`).
-- [ ] RLS `UPDATE` policies for each table, using the same `is_admin()`.
-- [ ] Reuse the form and action patterns from increment 1 (extract shared form components if there are three or more).
-- [ ] Revalidation for each table, plus tests and docs as in increment 1.
+- [x] Fix the pre-existing `next build` failure first. Already fixed on `main` by `600cb3f` (`'use client'` on `PlayCard`): `npm run build` passes, including the new admin routes.
+- [x] Add the `admin` scope to `CONTRIBUTING.md`.
+- [x] Edit `plays` (`title`, `description`, `short_desc`, `poster_url`, `trailer_url`, `youtube_url`), with `slug` still locked. Pages: `/admin/plays`, `/admin/plays/[id]`.
+- [x] Edit `productions` (`season_year`, `notes`). Page: `/admin/productions/[id]`, reached from the play page. `play_id` is locked.
+- [x] Edit `performance_people` (`role`, `character_name`, `sort_order`, `costume_url`, `notes`). Pages: `/admin/dates/[id]/cast` and `/admin/dates/[id]/cast/[entryId]`, reached from the date page. `date_id` and `person_id` are locked.
+- [x] RLS `UPDATE` policies for each table, using the same `is_admin()`: `supabase/migrations/20261025000000_admin_console_increment_2.sql`.
+- [x] Reuse the form and action patterns from increment 1. The five update actions now share `runUpdate` in `app/admin/actions.ts`, and `Field` gained a `select` (`options`) and a `number` type.
+- [x] Revalidation for each table, plus tests and docs (README, CHANGELOG, MONITOR). `tsc --noEmit` is clean, `npm test` has 145 passing tests and `npm run build` passes.
+
+Design notes:
+- **Cast is edited per date**, because `performance_people` rows hang off a date (1233 rows in total, over the PostgREST default of 1000 per request, so there is no global list). Editing the same role across a whole run means editing each date.
+- **`role` is a select** limited to `actor`, `director`, `technician` and `other`, the only values in the data. A row holding another value keeps it in the select until it is changed.
+- **`costume_url`** holds empty strings in some rows. An empty value is saved as `null`.
+- **`plays` URL columns** have no sentinel values (all existing values are full `http(s)` URLs), so they are validated as plain URLs.
+- **`plays.slug` and `productions.season_year`:** `season_year` is user-visible (the `?year=` tab and headings), so it is editable and required. `slug` stays locked.
+
+### 2.1 Manual verification (maintainer)
+- [ ] Apply `supabase/migrations/20261025000000_admin_console_increment_2.sql` in the Supabase SQL editor. Without it every save in increment 2 fails with "permessi insufficienti".
+- [ ] Edit a play's `short_desc` and check `/spettacoli` and `/spettacoli/[slug]` without a redeploy.
+- [ ] Edit a production's `notes` and check the production history on `/spettacoli/[slug]`.
+- [ ] Edit a cast entry (for example `character_name`) and check the cast list on `/spettacoli/[slug]` and the person page on `/attori/[slug]`.
+- [ ] Anon-key writes to `plays`, `productions` and `performance_people` are rejected (repeat the no-op PATCH check from 1.7 after applying the migration).
+- [ ] Try the new pages on a phone: `/admin/plays` → a play → a production → a date → *Cast e crediti*.
 
 ## Increment 3: create and delete (PR 3, closes #14)
 
@@ -151,5 +170,6 @@ Public pages use time-based refresh (`revalidate` between 300 and 86400 seconds,
 - **Next 16 middleware naming and API changes:** resolved. It is `proxy.ts`.
 - **`@supabase/ssr` with React 18.3 / Next 16:** installed (0.12.7) and typechecks. The authenticated flow is not tested yet.
 - **`personal_data` exposure:** see the schema notes above.
+- **`robots.txt` sitemap URL has a double slash** (`https://www.lenuoveespressioni.it//sitemap.xml`). Pre-existing and minor. Fix it in `app/robots.ts` (probably a trailing slash in the site URL env var or constant).
 - **Migration is manual:** applied in Supabase on 2026-10-18. RLS is the real security boundary, so test that an unauthenticated write is rejected before deploying the admin UI to production.
 - **Supabase dashboard unreachable:** the redirect URL could not be saved from the dashboard. The Management API (`PATCH /v1/projects/{ref}/config/auth`, field `uri_allow_list`) is the fallback, and it replaces the whole list.
