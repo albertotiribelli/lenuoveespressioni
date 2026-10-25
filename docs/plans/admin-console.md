@@ -182,6 +182,25 @@ Design notes:
 - Image upload to Supabase Storage with client-side resize (the camera or gallery on a phone).
 - Audit log of who changed what.
 
+## Security audit (issue #17, 2026-10-26)
+
+Question: can an unauthenticated request mutate `people`, `dates` or the other tables through the admin server actions, even if the UI is gated?
+
+Answer: no. Four independent layers, checked as follows.
+
+| Layer | What it does | Evidence |
+|---|---|---|
+| `proxy.ts` | Redirects unauthenticated requests to `/admin/*` to `/admin/login` (uses `getUser()`, which is validated by Supabase, not `getSession()`, which only reads the cookie). | Live: all admin pages and a forged server-action POST to `/admin/...` return 307 to `/admin/login`. |
+| Page guard | Every admin page calls `requireAdminPage()`. | `__tests__/admin/authAudit.test.ts` scans every `app/admin/**/page.tsx`. |
+| Action guard | Every server action calls `requireAdmin()` first (session via `getUser()`, then `ADMIN_EMAILS`), before reading input or touching the database. | The same test calls every exported action with no session and with a non-admin user and expects "Non autorizzato" and zero database calls. I checked it fails when a guard is removed. |
+| RLS | `is_admin()` on `UPDATE`, `INSERT` and `DELETE` for the five tables. The service-role key is never used. | Live: anon-key `INSERT` into all five tables fails with `42501` (RLS), and anon `UPDATE` returned no rows on real rows (2026-10-25). |
+
+Why the action guard matters: `proxy.ts` only matches `/admin/*`, but a server action can be called with its action id from any route, and the ids are in public JS chunks. So the proxy is not a boundary for actions. Only `requireAdmin()` inside each action is, and the audit test enforces it for every current and future action. Adding an action without the guard fails the test.
+
+Not tested live: anon `DELETE` on a real row (a successful test would delete data). It uses the same `is_admin()` policy shape as the tested ones.
+
+Findings: none that need a fix. `sendMagicLink` (login) and `signOut` are public by design: the first returns the same answer for allowed and not allowed emails, the second only clears the caller's own session.
+
 ## Risks and open items
 
 - **Magic-link email limits:** the default Supabase sender is rate-limited. Fine for two people, and the fallback is email and password.
