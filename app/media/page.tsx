@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/siteConfig'
 import { getPlays } from '@/lib/getPlays'
 import YoutubeEmbed from '@/components/ui/YoutubeEmbed'
 import Link from 'next/link'
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     title: 'Media — Le Nuove Espressioni',
     description: 'Trailer e video degli spettacoli della compagnia teatrale Le Nuove Espressioni.',
     type: 'website',
-    images: [{ url: '/logo.png' }],
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

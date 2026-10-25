@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/siteConfig'
 import { getPlays } from '@/lib/getPlays'
 import PlayGrid from '@/components/play/PlayGrid'
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Spettacoli — Le Nuove Espressioni',
     description: 'Il repertorio della compagnia teatrale Le Nuove Espressioni: tutti gli spettacoli dal 2006 a oggi.',
     type: 'website',
-    images: [{ url: '/logo.png' }],
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 
