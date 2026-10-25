@@ -9,6 +9,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- Admin security audit (#17): regression tests that every admin server action refuses without a session and for a non-admin user, and that every admin page calls `requireAdminPage()`. Findings in `docs/plans/admin-console.md`
 - `.github/dependabot.yml`: weekly npm updates (minor and patch grouped in one PR) and monthly GitHub Actions updates (#9)
 - `scripts/fake-supabase.mjs` and a hermetic CI build: the `Type-check, test & build` job was red on `main` since at least June because pages query Supabase while prerendering and the placeholder URL did not resolve. CI now builds against a local fake that answers every read with an empty result (no secrets, no network). The production build is unchanged and still fails if Supabase is unreachable
 - **Admin console: copy cast between dates.** The cast list of a date has a "Copia il cast da un'altra data" form that copies the cast entries of another date of the same production. Entries already on the date (same person, role and character) are skipped, and the copy is a single insert, so it either copies everything or nothing. No new migration: it uses the increment 3 insert policy
