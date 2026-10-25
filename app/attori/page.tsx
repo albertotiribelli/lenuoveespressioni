@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/siteConfig'
 import { unstable_cache } from 'next/cache'
 import { getPeople } from '@/lib/getPeople'
 import { lastName } from '@/lib/membershipTimeline'
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
     title: 'Compagnia — Le Nuove Espressioni',
     description: 'I membri della compagnia teatrale Le Nuove Espressioni: attori, registi e tecnici.',
     type: 'website',
-    images: [{ url: '/logo.png' }],
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

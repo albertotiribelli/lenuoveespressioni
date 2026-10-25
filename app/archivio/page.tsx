@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/siteConfig'
 import { getAllProductions } from '@/lib/getProductions'
 import ArchiveTimeline from '@/components/ui/ArchiveTimeline'
 
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
     title: 'Archivio — Le Nuove Espressioni',
     description: 'Lo storico delle produzioni di Le Nuove Espressioni dal 2006 a oggi: date, teatri e location.',
     type: 'website',
-    images: [{ url: '/logo.png' }],
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

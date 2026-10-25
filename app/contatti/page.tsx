@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/siteConfig'
 import { COMPANY } from '@/lib/company'
 
 export const revalidate = 86400
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     title: 'Contatti — Le Nuove Espressioni',
     description: 'Contatta la compagnia teatrale Le Nuove Espressioni per collaborazioni, ospitalità e informazioni sugli spettacoli.',
     type: 'website',
-    images: [{ url: '/logo.png' }],
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 

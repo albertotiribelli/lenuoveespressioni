@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/siteConfig'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import UpcomingDatesSection from '@/components/ui/UpcomingDatesSection'
@@ -10,7 +11,7 @@ export const revalidate = 300
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: {
-    images: [{ url: '/logo.png' }],
+    images: [DEFAULT_OG_IMAGE],
   },
 }
 
