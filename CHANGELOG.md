@@ -23,6 +23,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - `getPlaySlugs` and `getPersonSlugs` lightweight queries for `generateStaticParams`
 
 ### Changed
+- **Performance (#7, #11, #16):** `/attori` is now statically rendered (ISR, 1 h) instead of running a function on every request. The hidden company history (`?edespressionisimili`) is switched on in the browser and loads its data from the new cached `/api/attori/timeline`, so regular visits never pay for it. `vercel.json` pins the functions to `dub1` (Dublin), next to the Supabase database (AWS eu-west-1); they ran in `iad1` (US East) by default, so every query crossed the Atlantic
 - Admin server actions share one `runUpdate` helper (admin check, id and input validation, update through the session client, revalidation)
 - `/spettacoli/[slug]`: drops `searchParams` prop, enabling ISR; `?year=` tab is now initialised client-side via `useEffect` after hydration
 - `/spettacoli/[slug]` and `/attori/[slug]`: `generateStaticParams` pre-renders all pages at deploy time; `revalidate = 3600` keeps them fresh
