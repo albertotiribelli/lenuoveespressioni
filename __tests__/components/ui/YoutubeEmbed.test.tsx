@@ -11,6 +11,11 @@ describe('YoutubeEmbed', () => {
     expect(iframe).toHaveAttribute('src', 'https://www.youtube.com/embed/dQw4w9WgXcQ')
   })
 
+  it('lazy-loads the iframe so below-the-fold trailers do not slow the first paint', () => {
+    render(<YoutubeEmbed url="https://youtu.be/dQw4w9WgXcQ" />)
+    expect(screen.getByTitle(/trailer/i)).toHaveAttribute('loading', 'lazy')
+  })
+
   it('renders nothing for an invalid URL', () => {
     const { container } = render(<YoutubeEmbed url="https://vimeo.com/123" />)
     expect(container.firstChild).toBeNull()

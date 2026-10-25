@@ -63,7 +63,10 @@ npm run build    # Production build
 npm run start    # Serve production build locally
 npm run lint     # ESLint
 npm test         # Jest unit tests
+npx @lhci/cli autorun   # Lighthouse budget against a local build (run `npm run build` first; needs Chrome)
 ```
+
+The `Lighthouse` GitHub workflow runs the same budget (`lighthouserc.json`) on every PR. It needs the repository variables `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public values) and is skipped without them.
 
 ---
 

@@ -14,6 +14,8 @@ export default function YoutubeEmbed({ url, title = 'Trailer' }: YoutubeEmbedPro
       <iframe
         src={embedUrl}
         title={title}
+        // Trailers are below the fold: do not load YouTube's player until the user scrolls near it.
+        loading="lazy"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         className="absolute inset-0 h-full w-full"
