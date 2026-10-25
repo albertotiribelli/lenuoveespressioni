@@ -2,16 +2,17 @@ interface FieldProps {
   name: string
   label: string
   defaultValue?: string | null
-  type?: 'text' | 'url' | 'date' | 'time' | 'email'
+  type?: 'text' | 'url' | 'date' | 'time' | 'email' | 'number'
   required?: boolean
   error?: string
   multiline?: boolean
+  options?: readonly string[]
 }
 
 const INPUT =
   'min-h-11 w-full rounded-sm border border-[var(--border)] bg-[var(--card-bg)] px-3 py-2 text-base text-[var(--foreground)] focus:border-[var(--accent)] focus:outline-none'
 
-export default function Field({ name, label, defaultValue, type = 'text', required, error, multiline }: FieldProps) {
+export default function Field({ name, label, defaultValue, type = 'text', required, error, multiline, options }: FieldProps) {
   const id = `field-${name}`
   const describedBy = error ? `${id}-error` : undefined
   return (
@@ -20,13 +21,24 @@ export default function Field({ name, label, defaultValue, type = 'text', requir
         {label}
         {required && <span aria-hidden="true"> *</span>}
       </label>
-      {multiline ? (
+      {options ? (
+        <select id={id} name={name} defaultValue={defaultValue ?? ''} required={required} aria-invalid={!!error} aria-describedby={describedBy} className={INPUT}>
+          {!defaultValue && <option value="" />}
+          {defaultValue && !options.includes(defaultValue) && <option value={defaultValue}>{defaultValue}</option>}
+          {options.map((o) => (
+            <option key={o} value={o}>
+              {o}
+            </option>
+          ))}
+        </select>
+      ) : multiline ? (
         <textarea id={id} name={name} defaultValue={defaultValue ?? ''} rows={6} aria-invalid={!!error} aria-describedby={describedBy} className={INPUT} />
       ) : (
         <input
           id={id}
           name={name}
           type={type}
+          {...(type === 'number' && { inputMode: 'numeric' as const, min: 0 })}
           defaultValue={type === 'time' ? (defaultValue ?? '').slice(0, 5) : (defaultValue ?? '')}
           required={required}
           aria-invalid={!!error}

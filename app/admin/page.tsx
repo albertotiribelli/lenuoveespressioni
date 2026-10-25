@@ -11,9 +11,13 @@ export default async function AdminHome() {
         <span className="font-bold">Persone</span>
         <span className="text-sm opacity-70">Bio, foto, ruolo, stato</span>
       </Link>
+      <Link href="/admin/plays" className={CARD}>
+        <span className="font-bold">Spettacoli</span>
+        <span className="text-sm opacity-70">Titolo, descrizione, locandina, produzioni</span>
+      </Link>
       <Link href="/admin/dates" className={CARD}>
         <span className="font-bold">Date</span>
-        <span className="text-sm opacity-70">Teatro, orario, link biglietti</span>
+        <span className="text-sm opacity-70">Teatro, orario, link biglietti, cast e crediti</span>
       </Link>
     </nav>
   )

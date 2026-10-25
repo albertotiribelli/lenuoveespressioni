@@ -5,7 +5,15 @@ import { redirect } from 'next/navigation'
 import { revalidatePath, updateTag } from 'next/cache'
 import { createSupabaseServerClient } from '@/lib/supabase/server'
 import { NotAdminError, parseAdminEmails, requireAdmin } from '@/lib/admin/requireAdmin'
-import { parseDateInput, parsePersonInput, type FieldErrors } from '@/lib/admin/validation'
+import {
+  parseDateInput,
+  parsePerformancePersonInput,
+  parsePersonInput,
+  parsePlayInput,
+  parseProductionInput,
+  type FieldErrors,
+  type ParseResult,
+} from '@/lib/admin/validation'
 
 export interface ActionState {
   ok: boolean
@@ -39,7 +47,31 @@ export async function signOut() {
   redirect('/admin/login')
 }
 
-export async function updatePerson(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
+type AdminTable = 'people' | 'dates' | 'plays' | 'productions' | 'performance_people'
+
+// The generated client types are per-table, so the shared helper uses this narrow shape instead.
+interface UpdateBuilder {
+  update(values: object): {
+    eq(column: 'id', value: string): {
+      select(columns: string): {
+        maybeSingle(): PromiseLike<{ data: unknown; error: unknown }>
+      }
+    }
+  }
+}
+
+interface UpdateSpec {
+  table: AdminTable
+  notFound: string
+  parse: (form: FormData) => ParseResult<object>
+  // Columns read back from the updated row, to build revalidation paths.
+  returning: string
+  revalidate: (row: Record<string, string>) => void
+}
+
+// Shared by every update action: admin check, id and input validation, update through the
+// session client (RLS is the real boundary), then revalidation. Never leaks raw database errors.
+async function runUpdate(spec: UpdateSpec, id: string, formData: FormData): Promise<ActionState> {
   let ctx
   try {
     ctx = await requireAdmin()
@@ -49,54 +81,116 @@ export async function updatePerson(id: string, _prev: ActionState, formData: For
   }
   if (!UUID_RE.test(id)) return { ok: false, error: 'Identificativo non valido' }
 
-  const parsed = parsePersonInput(formData)
+  const parsed = spec.parse(formData)
   if (!parsed.ok) return { ok: false, fieldErrors: parsed.errors }
 
-  const { data, error } = await ctx.supabase
-    .from('people')
+  const { data, error } = await (ctx.supabase.from(spec.table) as unknown as UpdateBuilder)
     .update(parsed.data)
     .eq('id', id)
-    .select('slug')
+    .select(spec.returning)
     .maybeSingle()
   if (error) return { ok: false, error: 'Salvataggio non riuscito. Riprova.' }
-  if (!data) return { ok: false, error: 'Persona non trovata o permessi insufficienti' }
+  if (!data) return { ok: false, error: spec.notFound }
 
-  updateTag('people')
-  revalidatePath('/')
-  revalidatePath('/attori')
-  revalidatePath(`/attori/${data.slug}`)
-  revalidatePath('/spettacoli/[slug]', 'page')
-  revalidatePath('/archivio')
+  spec.revalidate(data as Record<string, string>)
   return { ok: true }
 }
 
+export async function updatePerson(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runUpdate(
+    {
+      table: 'people',
+      notFound: 'Persona non trovata o permessi insufficienti',
+      parse: parsePersonInput,
+      returning: 'slug',
+      revalidate: (row) => {
+        updateTag('people')
+        revalidatePath('/')
+        revalidatePath('/attori')
+        revalidatePath(`/attori/${row.slug}`)
+        revalidatePath('/spettacoli/[slug]', 'page')
+        revalidatePath('/archivio')
+      },
+    },
+    id,
+    formData
+  )
+}
+
 export async function updateDate(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
-  let ctx
-  try {
-    ctx = await requireAdmin()
-  } catch (e) {
-    if (e instanceof NotAdminError) return { ok: false, error: 'Non autorizzato' }
-    throw e
-  }
-  if (!UUID_RE.test(id)) return { ok: false, error: 'Identificativo non valido' }
+  return runUpdate(
+    {
+      table: 'dates',
+      notFound: 'Data non trovata o permessi insufficienti',
+      parse: parseDateInput,
+      returning: 'id',
+      revalidate: () => {
+        updateTag('dates')
+        revalidatePublicShowPages()
+      },
+    },
+    id,
+    formData
+  )
+}
 
-  const parsed = parseDateInput(formData)
-  if (!parsed.ok) return { ok: false, fieldErrors: parsed.errors }
+export async function updatePlay(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runUpdate(
+    {
+      table: 'plays',
+      notFound: 'Spettacolo non trovato o permessi insufficienti',
+      parse: parsePlayInput,
+      returning: 'slug',
+      revalidate: () => {
+        revalidatePublicShowPages()
+        revalidatePath('/media')
+      },
+    },
+    id,
+    formData
+  )
+}
 
-  const { data, error } = await ctx.supabase
-    .from('dates')
-    .update(parsed.data)
-    .eq('id', id)
-    .select('id')
-    .maybeSingle()
-  if (error) return { ok: false, error: 'Salvataggio non riuscito. Riprova.' }
-  if (!data) return { ok: false, error: 'Data non trovata o permessi insufficienti' }
+export async function updateProduction(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runUpdate(
+    {
+      table: 'productions',
+      notFound: 'Produzione non trovata o permessi insufficienti',
+      parse: parseProductionInput,
+      returning: 'id',
+      revalidate: () => {
+        updateTag('dates')
+        revalidatePublicShowPages()
+      },
+    },
+    id,
+    formData
+  )
+}
 
-  updateTag('dates')
+export async function updatePerformancePerson(id: string, _prev: ActionState, formData: FormData): Promise<ActionState> {
+  return runUpdate(
+    {
+      table: 'performance_people',
+      notFound: 'Voce non trovata o permessi insufficienti',
+      parse: parsePerformancePersonInput,
+      returning: 'id',
+      revalidate: () => {
+        updateTag('people')
+        updateTag('dates')
+        revalidatePublicShowPages()
+        revalidatePath('/attori/[slug]', 'page')
+      },
+    },
+    id,
+    formData
+  )
+}
+
+function revalidatePublicShowPages() {
   revalidatePath('/')
   revalidatePath('/spettacoli')
   revalidatePath('/spettacoli/[slug]', 'page')
   revalidatePath('/archivio')
   revalidatePath('/attori', 'layout')
-  return { ok: true }
 }

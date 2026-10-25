@@ -22,6 +22,30 @@ export interface DateInput {
   gphotos_url: string | null
 }
 
+export interface PlayInput {
+  title: string
+  short_desc: string | null
+  description: string | null
+  poster_url: string | null
+  trailer_url: string | null
+  youtube_url: string | null
+}
+
+export interface ProductionInput {
+  season_year: string
+  notes: string | null
+}
+
+export const PERFORMANCE_ROLES = ['actor', 'director', 'technician', 'other'] as const
+
+export interface PerformancePersonInput {
+  role: (typeof PERFORMANCE_ROLES)[number]
+  character_name: string | null
+  sort_order: number | null
+  costume_url: string | null
+  notes: string | null
+}
+
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/
 
@@ -100,6 +124,64 @@ export function parseDateInput(form: FormData): ParseResult<DateInput> {
       notes: text(form, 'notes') || null,
       tickets_url,
       gphotos_url,
+    },
+  }
+}
+
+export function parsePlayInput(form: FormData): ParseResult<PlayInput> {
+  const errors: FieldErrors = {}
+  const title = required(form, 'title', errors, 'Il titolo')
+  const poster_url = optionalUrl(form, 'poster_url', errors)
+  const trailer_url = optionalUrl(form, 'trailer_url', errors)
+  const youtube_url = optionalUrl(form, 'youtube_url', errors)
+
+  if (Object.keys(errors).length) return { ok: false, errors }
+  return {
+    ok: true,
+    data: {
+      title,
+      short_desc: text(form, 'short_desc') || null,
+      description: text(form, 'description') || null,
+      poster_url,
+      trailer_url,
+      youtube_url,
+    },
+  }
+}
+
+export function parseProductionInput(form: FormData): ParseResult<ProductionInput> {
+  const errors: FieldErrors = {}
+  const season_year = required(form, 'season_year', errors, "L'anno di stagione")
+
+  if (Object.keys(errors).length) return { ok: false, errors }
+  return { ok: true, data: { season_year, notes: text(form, 'notes') || null } }
+}
+
+export function parsePerformancePersonInput(form: FormData): ParseResult<PerformancePersonInput> {
+  const errors: FieldErrors = {}
+  const role = text(form, 'role') as PerformancePersonInput['role']
+  if (!role) errors.role = 'Il ruolo è obbligatorio'
+  else if (!PERFORMANCE_ROLES.includes(role)) errors.role = 'Ruolo non valido'
+
+  const rawOrder = text(form, 'sort_order')
+  let sort_order: number | null = null
+  if (rawOrder) {
+    if (!/^\d{1,4}$/.test(rawOrder)) errors.sort_order = "L'ordine deve essere un numero intero (0 o più)"
+    else sort_order = Number(rawOrder)
+  }
+
+  // costume_url holds '' in some existing rows: empty becomes null
+  const costume_url = optionalUrl(form, 'costume_url', errors)
+
+  if (Object.keys(errors).length) return { ok: false, errors }
+  return {
+    ok: true,
+    data: {
+      role,
+      character_name: text(form, 'character_name') || null,
+      sort_order,
+      costume_url,
+      notes: text(form, 'notes') || null,
     },
   }
 }
