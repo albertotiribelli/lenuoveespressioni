@@ -15,7 +15,12 @@ export default async function AdminPeople({ searchParams }: { searchParams: Prom
 
   return (
     <section className="flex flex-col gap-4">
-      <h1 className="font-serif text-2xl">Persone</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="font-serif text-2xl">Persone</h1>
+        <Link href="/admin/people/new" className="flex min-h-11 items-center rounded-sm border border-[var(--accent)] px-4 text-[var(--accent)]">
+          + Nuova
+        </Link>
+      </div>
       <form className="flex gap-2" role="search">
         <input
           name="q"

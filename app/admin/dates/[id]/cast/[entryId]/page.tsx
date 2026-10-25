@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireAdminPage } from '@/lib/admin/guard'
 import PerformancePersonForm from '@/components/admin/PerformancePersonForm'
+import DeleteButton from '@/components/admin/DeleteButton'
+import { deleteCastEntry } from '@/app/admin/actions'
 
 export default async function EditCastEntry({ params }: { params: Promise<{ id: string; entryId: string }> }) {
   const { supabase } = await requireAdminPage()
@@ -22,6 +24,7 @@ export default async function EditCastEntry({ params }: { params: Promise<{ id: 
       </Link>
       <h1 className="font-serif text-2xl">{entry.people?.name ?? 'Persona sconosciuta'}</h1>
       <PerformancePersonForm entry={entry} />
+      <DeleteButton action={deleteCastEntry.bind(null, id, entry.id)} label="questa voce" />
     </section>
   )
 }

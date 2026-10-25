@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { requireAdminPage } from '@/lib/admin/guard'
 import DateForm from '@/components/admin/DateForm'
+import DeleteButton from '@/components/admin/DeleteButton'
+import { deleteDate } from '@/app/admin/actions'
 
 export default async function EditDate({ params }: { params: Promise<{ id: string }> }) {
   const { supabase } = await requireAdminPage()
@@ -32,6 +34,7 @@ export default async function EditDate({ params }: { params: Promise<{ id: strin
         Cast e crediti →
       </Link>
       <DateForm date={date} />
+      <DeleteButton action={deleteDate.bind(null, date.id)} label="questa data" />
     </section>
   )
 }

@@ -46,6 +46,12 @@ export interface PerformancePersonInput {
   notes: string | null
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+export function isUuid(value: string): boolean {
+  return UUID_RE.test(value)
+}
+
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/
 
@@ -184,4 +190,19 @@ export function parsePerformancePersonInput(form: FormData): ParseResult<Perform
       notes: text(form, 'notes') || null,
     },
   }
+}
+
+export interface NewCastEntryInput extends PerformancePersonInput {
+  person_id: string
+}
+
+export function parseNewCastEntryInput(form: FormData): ParseResult<NewCastEntryInput> {
+  const base = parsePerformancePersonInput(form)
+  const errors: FieldErrors = base.ok ? {} : { ...base.errors }
+  const person_id = text(form, 'person_id')
+  if (!person_id) errors.person_id = 'Scegli una persona'
+  else if (!isUuid(person_id)) errors.person_id = 'Persona non valida'
+
+  if (Object.keys(errors).length || !base.ok) return { ok: false, errors }
+  return { ok: true, data: { ...base.data, person_id } }
 }

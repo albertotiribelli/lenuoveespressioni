@@ -17,6 +17,11 @@ jest.mock('@/app/admin/actions', () => ({
   updatePlay: jest.fn(),
   updateProduction: jest.fn(),
   updatePerformancePerson: jest.fn(),
+  createPerson: jest.fn(),
+  createPlay: jest.fn(),
+  createProduction: jest.fn(),
+  createDate: jest.fn(),
+  createCastEntry: jest.fn(),
   sendMagicLink: jest.fn(),
 }))
 
@@ -152,5 +157,44 @@ describe('PerformancePersonForm', () => {
     mockState = { ok: false, fieldErrors: { sort_order: "L'ordine deve essere un numero intero (0 o più)" } }
     render(<PerformancePersonForm entry={entry} />)
     expect(screen.getByRole('alert')).toHaveTextContent('numero intero')
+  })
+})
+
+describe('create mode (no existing row)', () => {
+  it('PersonForm starts empty, with the member checkbox on by default', () => {
+    render(<PersonForm />)
+    expect(screen.getByLabelText(/Nome/)).toHaveValue('')
+    expect(screen.getByLabelText(/Membro attivo/)).toBeChecked()
+  })
+
+  it('PlayForm starts empty', () => {
+    render(<PlayForm />)
+    expect(screen.getByLabelText(/Titolo/)).toHaveValue('')
+  })
+
+  it('ProductionForm and DateForm start empty and keep validation errors', () => {
+    mockState = { ok: false, fieldErrors: { season_year: "L'anno di stagione è obbligatorio" } }
+    const { unmount } = render(<ProductionForm playId="11111111-1111-1111-1111-111111111111" />)
+    expect(screen.getByLabelText(/Stagione/)).toHaveValue('')
+    expect(screen.getByRole('alert')).toHaveTextContent('obbligatorio')
+    unmount()
+
+    mockState = { ok: false }
+    render(<DateForm productionId="11111111-1111-1111-1111-111111111111" />)
+    expect(screen.getByLabelText(/Teatro/)).toHaveValue('')
+  })
+
+  it('PerformancePersonForm asks for the person only when creating', () => {
+    const people = [
+      { id: 'a', name: 'Anna Bianchi' },
+      { id: 'b', name: 'Mario Rossi' },
+    ]
+    const { unmount } = render(<PerformancePersonForm dateId="11111111-1111-1111-1111-111111111111" people={people} />)
+    expect(screen.getByLabelText(/^Persona\b/)).toHaveValue('')
+    expect(screen.getByRole('option', { name: 'Mario Rossi' })).toHaveValue('b')
+    unmount()
+
+    render(<PerformancePersonForm entry={{ id: 'e1', role: 'actor', character_name: null, sort_order: null, costume_url: null, notes: null }} />)
+    expect(screen.queryByLabelText(/^Persona\b/)).not.toBeInTheDocument()
   })
 })

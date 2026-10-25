@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import { updateDate, type ActionState } from '@/app/admin/actions'
+import { createDate, updateDate, type ActionState } from '@/app/admin/actions'
 import Field from './Field'
 import FormShell from './FormShell'
 
@@ -18,19 +18,23 @@ export interface DateFormValues {
 
 const INITIAL: ActionState = { ok: false }
 
-export default function DateForm({ date }: { date: DateFormValues }) {
-  const [state, formAction, pending] = useActionState(updateDate.bind(null, date.id), INITIAL)
+// Edit a date, or create one under `productionId` when no `date` is given.
+export default function DateForm({ date, productionId }: { date?: DateFormValues; productionId?: string }) {
+  const [state, formAction, pending] = useActionState(
+    date ? updateDate.bind(null, date.id) : createDate.bind(null, productionId ?? ''),
+    INITIAL
+  )
   const err = state.fieldErrors ?? {}
 
   return (
     <FormShell action={formAction} pending={pending} state={state}>
-      <Field name="date" label="Data" type="date" defaultValue={date.date} required error={err.date} />
-      <Field name="time" label="Orario" type="time" defaultValue={date.time} error={err.time} />
-      <Field name="theater_name" label="Teatro" defaultValue={date.theater_name} required error={err.theater_name} />
-      <Field name="city" label="Città" defaultValue={date.city} error={err.city} />
-      <Field name="tickets_url" label="Link biglietti (URL, oppure coming-soon)" defaultValue={date.tickets_url} error={err.tickets_url} />
-      <Field name="gphotos_url" label="Link foto (Google Photos)" type="url" defaultValue={date.gphotos_url} error={err.gphotos_url} />
-      <Field name="notes" label="Note" defaultValue={date.notes} multiline error={err.notes} />
+      <Field name="date" label="Data" type="date" defaultValue={date?.date} required error={err.date} />
+      <Field name="time" label="Orario" type="time" defaultValue={date?.time} error={err.time} />
+      <Field name="theater_name" label="Teatro" defaultValue={date?.theater_name} required error={err.theater_name} />
+      <Field name="city" label="Città" defaultValue={date?.city} error={err.city} />
+      <Field name="tickets_url" label="Link biglietti (URL, oppure coming-soon)" defaultValue={date?.tickets_url} error={err.tickets_url} />
+      <Field name="gphotos_url" label="Link foto (Google Photos)" type="url" defaultValue={date?.gphotos_url} error={err.gphotos_url} />
+      <Field name="notes" label="Note" defaultValue={date?.notes} multiline error={err.notes} />
     </FormShell>
   )
 }
