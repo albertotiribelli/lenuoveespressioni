@@ -2,9 +2,10 @@ import type { MetadataRoute } from 'next'
 import { SITE_URL } from '@/lib/siteConfig'
 import { getPlays } from '@/lib/getPlays'
 import { getPeople } from '@/lib/getPeople'
+import { getNewsSlugs } from '@/lib/getNews'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [plays, people] = await Promise.all([getPlays(), getPeople()])
+  const [plays, people, news] = await Promise.all([getPlays(), getPeople(), getNewsSlugs().catch(() => [])])
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: SITE_URL, priority: 1, changeFrequency: 'weekly' },
@@ -12,6 +13,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/attori`, priority: 0.9, changeFrequency: 'monthly' },
     { url: `${SITE_URL}/archivio`, priority: 0.7, changeFrequency: 'monthly' },
     { url: `${SITE_URL}/media`, priority: 0.6, changeFrequency: 'monthly' },
+    { url: `${SITE_URL}/news`, priority: 0.6, changeFrequency: 'weekly' },
     { url: `${SITE_URL}/chi-siamo`, priority: 0.5, changeFrequency: 'yearly' },
     { url: `${SITE_URL}/contatti`, priority: 0.5, changeFrequency: 'yearly' },
   ]
@@ -28,5 +30,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly' as const,
   }))
 
-  return [...staticRoutes, ...playRoutes, ...peopleRoutes]
+  const newsRoutes: MetadataRoute.Sitemap = news.map((n) => ({
+    url: `${SITE_URL}/news/${n.slug}`,
+    priority: 0.5,
+    changeFrequency: 'yearly' as const,
+  }))
+
+  return [...staticRoutes, ...playRoutes, ...peopleRoutes, ...newsRoutes]
 }

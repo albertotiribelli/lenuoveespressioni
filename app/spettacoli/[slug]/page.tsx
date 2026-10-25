@@ -1,7 +1,10 @@
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { getPlayBySlug, getPlayMeta, getPlaySlugs } from '@/lib/getPlays'
+import { getNewsForPlay } from '@/lib/getNews'
+import { formatDateItLong } from '@/lib/formatDate'
 import SpettacoloBody from '@/components/play/SpettacoloBody'
 import type { PerformanceDate } from '@/types'
 
@@ -41,6 +44,8 @@ export default async function SpettacoloPage({ params }: Props) {
   const { slug } = await params
   const play = await getPlayBySlug(slug).catch(() => null)
   if (!play) notFound()
+
+  const news = await getNewsForPlay(play.id).catch(() => [])
 
   const allDates: PerformanceDate[] = play.productions
     ?.flatMap((p) => p.dates ?? [])
@@ -155,6 +160,22 @@ export default async function SpettacoloPage({ params }: Props) {
         castsPerProduction={castsPerProduction}
         upcomingDates={upcomingDates}
       />
+
+      {news.length > 0 && (
+        <section className="mt-16">
+          <h2 className="mb-4 text-xs uppercase tracking-widest text-[var(--accent)]">Notizie</h2>
+          <ul className="space-y-3">
+            {news.map((n) => (
+              <li key={n.id}>
+                <Link href={`/news/${n.slug}`} className="text-[var(--text)] transition-colors hover:text-[var(--accent)]">
+                  {n.title}
+                </Link>
+                <span className="ml-3 text-xs text-[var(--text-muted)]">{formatDateItLong(n.published_at.slice(0, 10))}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </article>
   )
 }
