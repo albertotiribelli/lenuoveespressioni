@@ -61,6 +61,44 @@ export type Database = {
           },
         ]
       }
+      news: {
+        Row: {
+          body: string
+          created_at: string | null
+          id: string
+          play_id: string | null
+          published_at: string
+          slug: string
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string | null
+          id?: string
+          play_id?: string | null
+          published_at?: string
+          slug: string
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string | null
+          id?: string
+          play_id?: string | null
+          published_at?: string
+          slug?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "news_play_id_fkey"
+            columns: ["play_id"]
+            isOneToOne: false
+            referencedRelation: "plays"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       people: {
         Row: {
           bio: string | null

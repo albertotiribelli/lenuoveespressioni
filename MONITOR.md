@@ -20,6 +20,7 @@ Live in production. Core feature set complete:
 - Play pages with cast, production history, upcoming dates, and ticket links
 - Company member grid with role filter and active/alumni sections
 - Hidden membership timeline easter egg (`?edespressionisimili`)
+- News section (`/news`, `/news/[slug]`) backed by a `news` table, with posts linked to plays; generated 1200×630 Open Graph image for the static pages
 - Three-tier date strategy (near future / far future / recent past)
 - Admin console at `/admin` (magic-link login, create, edit and delete `people`, `dates`, `plays`, `productions` and cast and credits; issue #14, see `docs/plans/admin-console.md`)
 - ISR caching on all static routes; `unstable_cache` on dynamic ones
@@ -35,11 +36,11 @@ Live in production. Core feature set complete:
 
 ## Roadmap (next meaningful steps)
 
-- **Press / news section**: a simple `/news` page for announcements,
-  press mentions, and post-show recaps — likely sourced from a new
-  Supabase table or markdown files
-- **Real og:image**: replace the logo fallback (`/logo.png`) with a
-  proper 1200×630 share image for social previews on static pages
+- **News admin screen**: posts are added as rows in the Supabase `news`
+  table; an `/admin/news` screen (RLS policies already exist) would let
+  the maintainers publish from a phone
+- **News in the header**: link `/news` from the navigation once there is
+  a first post
 - **Old site redirect**: configure `.htaccess` on the Altervista host
   (`lenuoveespressioni.altervista.org`) to 301 to the new domain
 

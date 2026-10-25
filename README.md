@@ -17,6 +17,8 @@ Built with Next.js 16 (App Router), Supabase, and Tailwind CSS. Deployed on Verc
 | `/attori/[slug]` | Person profile — bio, performance history |
 | `/archivio` | Production archive timeline |
 | `/media` | Trailer gallery |
+| `/news` | News and post-show recaps, newest first |
+| `/news/[slug]` | A single news post, with a link to its play |
 | `/chi-siamo` | Company history |
 | `/contatti` | Contact info |
 
@@ -92,6 +94,17 @@ Managed in Supabase. Key tables:
 | `dates` | Individual performance dates, linked to a production |
 | `people` | Company members (actors, directors, technicians) |
 | `performance_people` | Join table: who appeared on which date, in which role |
+| `news` | News posts: `title`, `slug`, `body` (plain text), `published_at`, optional `play_id` |
+
+### News
+
+Create the table once by running `supabase/migrations/20261027000000_news.sql` in the Supabase SQL editor. Until then `/news` just shows "Nessuna notizia al momento". To publish a post, insert a row in `news` (Supabase dashboard, Table editor):
+
+- `title`, `slug` (lowercase, no spaces: it is the URL, `/news/<slug>`) and `body`. The body is plain text: a blank line starts a new paragraph. There is no markdown or HTML.
+- `published_at`: defaults to now. A date in the future keeps the post hidden until then (the page refreshes hourly).
+- `play_id` (optional): the post is then listed under *Notizie* on that play's page.
+
+The page is not linked from the header yet: add `{ href: '/news', label: 'News' }` to `components/layout/Header.tsx` when the first post is out.
 
 The `dates.tickets_url` column controls ticket links: `null` hides the button, `'coming-soon'` shows a preview label, any URL renders an active link.
 
