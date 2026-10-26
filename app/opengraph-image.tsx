@@ -35,7 +35,7 @@ export default async function Image() {
           <div style={{ marginTop: 32, fontSize: 32, lineHeight: 1.3, color: '#7C8DB5' }}>La magia del teatro prende vita!</div>
           <div style={{ marginTop: 16, fontSize: 24, color: '#7C8DB5' }}>{COMPANY.address}</div>
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        { }
         <img src={logoSrc} width={410} height={212} alt="" style={{ objectFit: 'contain' }} />
       </div>
     ),
