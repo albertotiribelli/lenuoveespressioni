@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import CreditsSection from './CreditsSection'
 import ProductionHistory from './ProductionHistory'
 import DatesList from './DatesList'
@@ -39,6 +39,9 @@ interface SpettacoloBodyProps {
   readonly upcomingDates: readonly PerformanceDate[]
 }
 
+const subscribeNoop = () => () => {}
+const readYearParam = () => new URLSearchParams(globalThis.location.search).get('year')
+
 export default function SpettacoloBody({
   description,
   trailerUrl,
@@ -48,14 +51,11 @@ export default function SpettacoloBody({
   castsPerProduction,
   upcomingDates,
 }: SpettacoloBodyProps) {
-  const [clickedYear, setClickedYear] = useState(castsPerProduction[0]?.season_year ?? '')
-
-  useEffect(() => {
-    const year = new URLSearchParams(globalThis.location.search).get('year')
-    if (year && castsPerProduction.some((p) => p.season_year === year)) {
-      setClickedYear(year)
-    }
-  }, [castsPerProduction])
+  const [pickedYear, setClickedYear] = useState<string | null>(null)
+  // The ?year= param is only readable in the browser: null on the server and during hydration.
+  const urlYear = useSyncExternalStore(subscribeNoop, readYearParam, () => null)
+  const validUrlYear = urlYear && castsPerProduction.some((p) => p.season_year === urlYear) ? urlYear : null
+  const clickedYear = pickedYear ?? validUrlYear ?? castsPerProduction[0]?.season_year ?? ''
   const [hoveredYear, setHoveredYear] = useState<string | null>(null)
 
   const activeYear = hoveredYear ?? clickedYear
